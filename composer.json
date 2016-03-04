@@ -1,0 +1,10 @@
+{
+  "name": "dtkahl/php-form-builder",
+  "license": "MIT",
+  "require": {},
+  "autoload": {
+    "psr-4": {
+      "Dtkahl\\FormBuilder\\": "src/"
+    }
+  }
+}
