@@ -1,7 +1,11 @@
 <?php namespace Dtkahl\FormBuilder\Interfaces;
 
 use Dtkahl\FormBuilder\FormBuilder;
+use Dtkahl\FormBuilder\Traits\FormTrait;
 
+/**
+ * @mixin FormTrait
+ */
 interface FormInterface
 {
 
@@ -15,15 +19,13 @@ interface FormInterface
   public function addElement(string $name, string $element);
 
   /**
-   * @param string $mode
-   * @return string|null
+   * @return array
    */
-  public function getView(string $mode);
+  public function getElements();
 
   /**
-   * @param string $mode
-   * @return mixed
+   * @return string
    */
-  public function render(string $mode);
+  public function render();
 
 }

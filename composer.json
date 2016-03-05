@@ -1,9 +1,7 @@
 {
   "name": "dtkahl/php-form-builder",
   "license": "MIT",
-  "require": {
-    "dtkahl/php-simple-view": "1.1.*"
-  },
+  "require": {},
   "autoload": {
     "psr-4": {
       "Dtkahl\\FormBuilder\\": "src/"

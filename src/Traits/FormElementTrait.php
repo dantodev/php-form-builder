@@ -2,38 +2,29 @@
 
 use Dtkahl\FormBuilder\FormBuilder;
 use Dtkahl\FormBuilder\Interfaces\FormElementInterface;
+use Dtkahl\FormBuilder\Interfaces\FormInterface;
 
 /**
  * @mixin FormElementInterface
  */
 trait FormElementTrait
 {
+  use ParameterTrait;
 
   private $_builder;
-  private $_options = [];
+  private $_form;
 
   /**
-   * FormTrait constructor.
-   * @param $builder
-   * @param $options
+   * FormElementTrait constructor.
+   * @param FormBuilder $builder
+   * @param FormInterface $form
+   * @param array $parameter
    */
-  public function __construct(FormBuilder $builder, array $options = [])
+  public function __construct(FormBuilder $builder, FormInterface $form,  array $parameter = [])
   {
     $this->_builder = $builder;
-    $this->_options = $options;
-  }
-
-  /**
-   * @param string $mode
-   * @return string
-   */
-  public function render(string $mode)
-  {
-    $view = $this->getView($mode);
-    if ($view === null) {
-      throw new \InvalidArgumentException("Unknown render mode '$mode' for form");
-    }
-    return $this->_builder->render($view, $this->_options);
+    $this->_form = $form;
+    $this->_parameter = $parameter;
   }
 
 }

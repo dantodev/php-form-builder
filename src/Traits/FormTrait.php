@@ -8,20 +8,20 @@ use Dtkahl\FormBuilder\Interfaces\FormInterface;
  */
 trait FormTrait
 {
+  use ParameterTrait;
 
   private $_builder;
-  private $_options   = [];
   private $_elements  = [];
 
   /**
    * FormTrait constructor.
    * @param FormBuilder $builder
-   * @param array $options
+   * @param $parameter
    */
-  public function __construct(FormBuilder $builder, array $options = [])
+  public function __construct(FormBuilder $builder, array $parameter = [])
   {
     $this->_builder = $builder;
-    $this->_options = $options;
+    $this->_parameter = $parameter;
   }
 
   /**
@@ -32,21 +32,13 @@ trait FormTrait
    */
   public function addElement(string $name, string $element, array $options = [])
   {
-    $this->_elements[$name] = new $element($this->_builder, $options);
+    $this->_elements[$name] = new $element($this->_builder, $this, $options);
     return $this;
   }
 
-  public function render(string $mode)
+  public function getElements()
   {
-    $view = $this->getView($mode);
-    if ($view === null) {
-      throw new \InvalidArgumentException("Unknown render mode '$mode' for form");
-    }
-    return $this->_builder->render($view, [
-        'mode' => $mode,
-        'elements' => $this->_elements,
-        'options' => $this->_options,
-    ]);
+    return $this->_elements;
   }
 
 }
