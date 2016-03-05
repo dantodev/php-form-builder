@@ -36,6 +36,9 @@ trait FormTrait
     return $this;
   }
 
+  /**
+   * @return array
+   */
   public function getElements()
   {
     return $this->_elements;
