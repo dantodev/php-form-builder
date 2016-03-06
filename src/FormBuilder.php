@@ -1,7 +1,7 @@
 <?php namespace Dtkahl\FormBuilder;
 
 use Dtkahl\FormBuilder\Interfaces\FormInterface;
-use Dtkahl\FormBuilder\Traits\ParameterTrait;
+use Dtkahl\ParameterTrait\ParameterTrait;
 
 class FormBuilder
 {

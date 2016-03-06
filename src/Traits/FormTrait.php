@@ -3,6 +3,7 @@
 use Dtkahl\FormBuilder\FormBuilder;
 use Dtkahl\FormBuilder\Interfaces\FormElementInterface;
 use Dtkahl\FormBuilder\Interfaces\FormInterface;
+use Dtkahl\ParameterTrait\ParameterTrait;
 
 /**
  * @mixin FormInterface
