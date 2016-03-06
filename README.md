@@ -1,7 +1,5 @@
 # PHP Form Builder
 
-Form builder for PHP
-
 
 ## Example Usage (with slim framework)
 
