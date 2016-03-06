@@ -3,16 +3,16 @@
 
 ## Example Usage (with slim framework)
 
-This Example demonstrate the implementation of an user registration form. The `FormBuilder` is designed for more complex forms than a registration form, but for demonstraition purpose we make an exception. ;)
+This Example demonstrates the implementation of a user registration form. The `FormBuilder` is designed for more complex forms than a registration form, but for demonstraition purpose, we make an exception. ;)
 
-The builder based on `Form` and `FormElement` classes. `Form` classes get registered on `FormBuilder` while `FormElement` are associated to  `Form` instances.
+The builder based on `Form` and `FormElement` classes. `Form` classes get registered on `FormBuilder` while `FormElement` are associated with `Form` instances.
 
-The example uses some traits (e.g. `Dtkahl\FormBuilder\Traits\FormTrait`) which contains some basic methods which are required by the interfaces you have to implement for `Form` and `FormElement` classes. I do highly recomanded to use them to save a bunch of time. :)
+The example uses some traits (e.g. `Dtkahl\FormBuilder\Traits\FormTrait`) which contains some basic methods which are required by the interfaces you have to implement for `Form` and `FormElement` classes. I do highly recommend to use them to save a bunch of time. :)
 
 
 #### Create Container
 
-The container provides an instance the `FormBuilder` class. We pass an array of parameters to the constructor. (optional, but needed in this example).
+The container provides an instance the `FormBuilder` class. We pass an array of parameters to the constructor. (Optional, but needed in this example).
 
 Parameters on FormBuilder (and later FormTrait and FormElementTrait) are implemented by using [dtkahl/php-parameter-trait](https://github.com/dtkahl/php-parameter-trait).
 
@@ -25,7 +25,7 @@ Parameters on FormBuilder (and later FormTrait and FormElementTrait) are impleme
 
 #### Create Form
 
-Before we can build a form, we have to create a new class which implements the interface `Dtkahl\FormBuilder\Interfaces\FormInterface` and optional (but recommanded) use the trait `Dtkahl\FormBuilder\Traits\FormTrait`.
+Before we can build a form, we have to create a new class which implements the interface `Dtkahl\FormBuilder\Interfaces\FormInterface` and optional (but recommended) use the trait `Dtkahl\FormBuilder\Traits\FormTrait`.
 
     <?php namespace App\Forms;
     
@@ -59,7 +59,7 @@ Before we can build a form, we have to create a new class which implements the i
 
 As you can see in the implemented interface, you need to declare a `render()` and a `save()` method. The save method should iterate over the form elements and call their save method.
 
-Now we need the view for the renderer. (in this example `registerForm.php`)
+Now we need the view for the renderer. (In this example `registerForm.php`)
 
     <form action="/register" method="POST">
       <?php
@@ -72,13 +72,13 @@ Now we need the view for the renderer. (in this example `registerForm.php`)
 
 The view should iterate over the associated form elements and call their render method.
 
-*I do __not__ recomand to make a dedicated form class for each use case. Rather it is more useful the define only on flexible form with parameters (like `method`, `action`, etc)  which will be evaluated in the view.* 
+*I do __not__ recommend to make a dedicated form class for each use case. Rather, it is more useful to define only on flexible form with parameters (like `method`, `action`, etc.)  which will be evaluated in the view.* 
 
 #### Create FormElement
 
-For this example we only create a simple form element with label and text input. It is possible to build far more complex elements than this.
+In this example, we only create a simple form element with label and text input. It is possible to build far more complex elements than this.
 
-We create a new class which implements the interface `Dtkahl\FormBuilder\Interfaces\FormElementInterface` and optional (but recommanded) use the trait `Dtkahl\FormBuilder\Traits\FormElementTrait`.
+We create a new class which implements the interface `Dtkahl\FormBuilder\Interfaces\FormElementInterface` and optional (but recommended) use the trait `Dtkahl\FormBuilder\Traits\FormElementTrait`.
 
     <?php namespace  App\Forms\Elements;
     
@@ -108,9 +108,9 @@ We create a new class which implements the interface `Dtkahl\FormBuilder\Interfa
     
     }
 
-As you can see in the implemented interface, you need to declare a `render()` and a `save()` method. **You should add some functionallity to the save method.**
+As you can see in the implemented interface, you need to declare a `render()` and a `save()` method. **You should add some functionality to the save method.**
 
-Now we need the view for the renderer. (in this example `inputElement.php`)
+Now we need the view for the renderer. (In this example `inputElement.php`)
 
     <div>
       <label><?php echo $form->getParameter('label') ?>:
@@ -121,7 +121,7 @@ Now we need the view for the renderer. (in this example `inputElement.php`)
 
 #### Register Middleware and Routes (register Form)
 
-We register an simple middleware where we register the Form to the `FormBuilder`, and use this middleware on the routes which needs the form (GET and POST `/register`, because there we render or rather save). We use the `success` parameter to check if save was successfully and perhaps redirect to `/done`. 
+We register a simple middleware where we register the Form to the `FormBuilder`, and use this middleware on the routes which needs the form (GET and POST `/register`, because there we render or rather save). We use the `success` parameter to check if save was successfully and perhaps redirect to `/done`. 
 
     $mw = function ($request, $response, $next) {
       $form = $container->get('FormBuilder')->registerForm('register', \App\Forms\registerForm::class);
