@@ -1,6 +1,7 @@
 <?php namespace Dtkahl\FormBuilder\Traits;
 
 use Dtkahl\FormBuilder\FormBuilder;
+use Dtkahl\FormBuilder\Interfaces\FormElementInterface;
 use Dtkahl\FormBuilder\Interfaces\FormInterface;
 
 /**
@@ -30,14 +31,18 @@ trait FormTrait
    * @param array $options
    * @return $this
    */
-  public function addElement(string $name, string $element, array $options = [])
+  public function registerElement(string $name, string $element, array $options = [])
   {
+    if (array_key_exists($name, $this->_elements)) {
+      throw new \RuntimeException("Form element with name '$name' already registered!");
+    }
+
     $this->_elements[$name] = new $element($this->_builder, $this, $options);
     return $this;
   }
 
   /**
-   * @return array
+   * @return FormElementInterface[]
    */
   public function getElements()
   {

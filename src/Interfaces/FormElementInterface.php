@@ -22,6 +22,9 @@ interface FormElementInterface
    */
   public function render();
 
-  // TODO save
+  /**
+   * @return FormElementInterface
+   */
+  public function save();
 
 }

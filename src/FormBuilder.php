@@ -22,7 +22,7 @@ class FormBuilder
    * @param string $name
    * @param string $class
    * @param array $options
-   * @return mixed
+   * @return FormInterface
    */
   public function registerForm(string $name, string $class, array $options = [])
   {

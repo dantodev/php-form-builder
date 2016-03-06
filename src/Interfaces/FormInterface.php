@@ -12,14 +12,15 @@ interface FormInterface
   public function __construct(FormBuilder $builder, array $options= []);
 
   /**
-   * @param $name
+   * @param string $name
    * @param string $element
-   * @return FormInterface
+   * @param array $options
+   * @return FormElementInterface
    */
-  public function addElement(string $name, string $element);
+  public function registerElement(string $name, string $element, array $options = []);
 
   /**
-   * @return array
+   * @return FormElementInterface[]
    */
   public function getElements();
 
@@ -28,6 +29,9 @@ interface FormInterface
    */
   public function render();
 
-  // TODO save
+  /**
+   * @return FormInterface
+   */
+  public function save();
 
 }
