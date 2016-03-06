@@ -3,11 +3,11 @@
 
 ## Example Usage (with slim framework)
 
-This Example demonstrates the implementation of a user registration form. The `FormBuilder` is designed for more complex forms than a registration form, but for demonstraition purpose, we make an exception. ;)
+This Example demonstrates the implementation of a user registration form. The `FormBuilder` is designed for more complex forms than a registration form, but for demonstration purposes, we make an exception. ;)
 
-The builder based on `Form` and `FormElement` classes. `Form` classes get registered on `FormBuilder` while `FormElement` are associated with `Form` instances.
+The builder is based on `Form` and `FormElement` classes. `Form` classes get registered on `FormBuilder` while `FormElement` classes are associated with `Form` instances.
 
-The example uses some traits (e.g. `Dtkahl\FormBuilder\Traits\FormTrait`) which contains some basic methods which are required by the interfaces you have to implement for `Form` and `FormElement` classes. I do highly recommend to use them to save a bunch of time. :)
+The example uses some traits (e.g. `Dtkahl\FormBuilder\Traits\FormTrait`) with some basic methods which are required by the interfaces, you have to implement for `Form` and `FormElement` classes. I do highly recommend to use them to save a bunch of time. :)
 
 
 #### Create Container
@@ -72,7 +72,7 @@ Now we need the view for the renderer. (In this example `registerForm.php`)
 
 The view should iterate over the associated form elements and call their render method.
 
-*I do __not__ recommend to make a dedicated form class for each use case. Rather, it is more useful to define only on flexible form with parameters (like `method`, `action`, etc.)  which will be evaluated in the view.* 
+*I do __not__ recommend to make a dedicated form class for each use case. Rather, it is more useful to define only one flexible form with parameters (like `method`, `action`, etc.)  which will be evaluated in the view.* 
 
 #### Create FormElement
 
@@ -119,9 +119,9 @@ Now we need the view for the renderer. (In this example `inputElement.php`)
       </label>
     </div>
 
-#### Register Middleware and Routes (register Form)
+#### Register middleware and routes (register Form)
 
-We register a simple middleware where we register the Form to the `FormBuilder`, and use this middleware on the routes which needs the form (GET and POST `/register`, because there we render or rather save). We use the `success` parameter to check if save was successfully and perhaps redirect to `/done`. 
+We register a simple middleware where we can can configure the form , and use this middleware on the routes which needs the form (GET and POST `/register`, because there we render or rather save). We use the `success` parameter to check if saving was successfully and perhaps redirect to `/done`. 
 
     $mw = function ($request, $response, $next) {
       $form = $container->get('FormBuilder')->registerForm('register', \App\Forms\registerForm::class);
