@@ -9,13 +9,19 @@ use Dtkahl\FormBuilder\Traits\FormTrait;
 interface FormInterface
 {
 
-  public function __construct(FormBuilder $builder, array $options= []);
+  /**
+   * FormInterface constructor.
+   * @param string $name
+   * @param FormBuilder $builder
+   * @param array $options
+   */
+  public function __construct(string $name, FormBuilder $builder, array $options= []);
 
   /**
    * @param string $name
    * @param string $element
    * @param array $options
-   * @return FormElementInterface
+   * @return mixed
    */
   public function registerElement(string $name, string $element, array $options = []);
 

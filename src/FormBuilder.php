@@ -29,7 +29,7 @@ class FormBuilder
     if (array_key_exists($name, $this->_forms)) {
       throw new \RuntimeException("Form with name '$name' already registered!");
     }
-    $this->_forms[$name] = new $class($this, $options);
+    $this->_forms[$name] = new $class($name, $this, $options);
     return $this->_forms[$name];
   }
 

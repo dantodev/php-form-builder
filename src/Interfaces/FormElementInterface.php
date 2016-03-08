@@ -11,11 +11,12 @@ interface FormElementInterface
 
   /**
    * FormElementInterface constructor.
+   * @param string $name
    * @param FormBuilder $builder
    * @param FormInterface $form
    * @param array $data
    */
-  public function __construct(FormBuilder $builder, FormInterface $form, array $data = []);
+  public function __construct(string $name, FormBuilder $builder, FormInterface $form, array $data = []);
 
   /**
    * @return string
