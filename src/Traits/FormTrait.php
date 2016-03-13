@@ -26,7 +26,7 @@ trait FormTrait
   {
     $this->_name = $name;
     $this->_builder = $builder;
-    $this->_properties = $properties;
+    $this->initProperties($properties);
   }
 
   /**

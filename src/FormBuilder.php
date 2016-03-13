@@ -15,7 +15,7 @@ class FormBuilder
    */
   public function __construct(array $properties = [])
   {
-    $this->_properties = $properties;
+    $this->initProperties($properties);
   }
 
   /**

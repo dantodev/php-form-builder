@@ -28,7 +28,7 @@ trait FormElementTrait
     $this->_name = $name;
     $this->_builder = $builder;
     $this->_form = $form;
-    $this->_properties = $properties;
+    $this->initProperties($properties);
   }
 
   public function getName()
