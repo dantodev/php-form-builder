@@ -3,14 +3,14 @@
 use Dtkahl\FormBuilder\FormBuilder;
 use Dtkahl\FormBuilder\Interfaces\FormElementInterface;
 use Dtkahl\FormBuilder\Interfaces\FormInterface;
-use Dtkahl\ParameterTrait\ParameterTrait;
+use Dtkahl\PropertyTrait\PropertyTrait;
 
 /**
  * @mixin FormInterface
  */
 trait FormTrait
 {
-  use ParameterTrait;
+  use PropertyTrait;
 
   private $_name;
   private $_builder;

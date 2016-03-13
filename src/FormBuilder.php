@@ -1,11 +1,11 @@
 <?php namespace Dtkahl\FormBuilder;
 
 use Dtkahl\FormBuilder\Interfaces\FormInterface;
-use Dtkahl\ParameterTrait\ParameterTrait;
+use Dtkahl\PropertyTrait\PropertyTrait;
 
 class FormBuilder
 {
-  use ParameterTrait;
+  use PropertyTrait;
 
   private $_forms = [];
 
