@@ -13,17 +13,17 @@ interface FormInterface
    * FormInterface constructor.
    * @param string $name
    * @param FormBuilder $builder
-   * @param array $options
+   * @param array $properties
    */
-  public function __construct(string $name, FormBuilder $builder, array $options= []);
+  public function __construct(string $name, FormBuilder $builder, array $properties = []);
 
   /**
    * @param string $name
    * @param string $element
-   * @param array $options
+   * @param array $properties
    * @return mixed
    */
-  public function registerElement(string $name, string $element, array $options = []);
+  public function registerElement(string $name, string $element, array $properties = []);
 
   /**
    * @return FormElementInterface[]

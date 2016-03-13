@@ -11,25 +11,25 @@ class FormBuilder
 
   /**
    * FormBuilder constructor.
-   * @param array $parameter
+   * @param array $properties
    */
-  public function __construct(array $parameter = [])
+  public function __construct(array $properties = [])
   {
-    $this->_parameter = $parameter;
+    $this->_properties = $properties;
   }
 
   /**
    * @param string $name
    * @param string $class
-   * @param array $options
+   * @param array $properties
    * @return FormInterface
    */
-  public function registerForm(string $name, string $class, array $options = [])
+  public function registerForm(string $name, string $class, array $properties = [])
   {
     if (array_key_exists($name, $this->_forms)) {
       throw new \RuntimeException("Form with name '$name' already registered!");
     }
-    $this->_forms[$name] = new $class($name, $this, $options);
+    $this->_forms[$name] = new $class($name, $this, $properties);
     return $this->_forms[$name];
   }
 

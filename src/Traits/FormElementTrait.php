@@ -21,14 +21,14 @@ trait FormElementTrait
    * @param string $name
    * @param FormBuilder $builder
    * @param FormInterface $form
-   * @param array $parameter
+   * @param array $properties
    */
-  public function __construct(string $name, FormBuilder $builder, FormInterface $form,  array $parameter = [])
+  public function __construct(string $name, FormBuilder $builder, FormInterface $form,  array $properties = [])
   {
     $this->_name = $name;
     $this->_builder = $builder;
     $this->_form = $form;
-    $this->_parameter = $parameter;
+    $this->_properties = $properties;
   }
 
   public function getName()
