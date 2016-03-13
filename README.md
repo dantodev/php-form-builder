@@ -12,9 +12,9 @@ The example uses some traits (e.g. `Dtkahl\FormBuilder\Traits\FormTrait`) with s
 
 #### Create Container
 
-The container provides an instance the `FormBuilder` class. We pass an array of parameters to the constructor. (Optional, but needed in this example).
+The container provides an instance the `FormBuilder` class. We pass an array of properites to the constructor. (Optional, but needed in this example).
 
-Parameters on FormBuilder (and later FormTrait and FormElementTrait) are implemented by using [dtkahl/php-parameter-trait](https://github.com/dtkahl/php-parameter-trait).
+Properties on FormBuilder (and later FormTrait and FormElementTrait) are implemented by using [dtkahl/php-property-trait](https://github.com/dtkahl/php-property-trait).
 
     $container['FormBuilder'] = function ($c) {
       return new \Dtkahl\FormBuilder\FormBuilder([
@@ -39,12 +39,12 @@ Before we can build a form, we have to create a new class which implements the i
     
       public function render()
       {
-        if (!$this->_builder->getParameter('renderer') instanceof ViewRenderer) {
-          return $this->_builder->getParameter('renderer')->render('registerForm.php', [
+        if (!$this->_builder->getProperty('renderer') instanceof ViewRenderer) {
+          return $this->_builder->getProperty('renderer')->render('registerForm.php', [
             'form' => $this
           ]);
         }
-        throw new \RuntimeException("Parameter 'renderer' missing!");
+        throw new \RuntimeException("Property 'renderer' missing!");
       }
       
       public function save()
@@ -72,7 +72,7 @@ Now we need the view for the renderer. (In this example `registerForm.php`)
 
 The view should iterate over the associated form elements and call their render method.
 
-*I do __not__ recommend to make a dedicated form class for each use case. Rather, it is more useful to define only one flexible form with parameters (like `method`, `action`, etc.)  which will be evaluated in the view.* 
+*I do __not__ recommend to make a dedicated form class for each use case. Rather, it is more useful to define only one flexible form with properties (like `method`, `action`, etc.)  which will be evaluated in the view.* 
 
 #### Create FormElement
 
@@ -92,18 +92,18 @@ We create a new class which implements the interface `Dtkahl\FormBuilder\Interfa
     
       public function render()
       {
-        if ($this->_builder->getParameter('renderer') instanceof ViewRenderer) {
-          return $this->_builder->getParameter('renderer')->render('inputElement.php', [
+        if ($this->_builder->getProperty('renderer') instanceof ViewRenderer) {
+          return $this->_builder->getProperty('renderer')->render('inputElement.php', [
             'element' => $this
           ]);
         }
-        throw new \RuntimeException("Parameter 'renderer' missing!");
+        throw new \RuntimeException("Property 'renderer' missing!");
       }
     
       public function save()
       {
         // TODO validate request data and perhaps save user
-        // TODO $form->setParameter('success')
+        // TODO $form->setProperty('success')
       }
     
     }
@@ -113,15 +113,15 @@ As you can see in the implemented interface, you need to declare a `render()` an
 Now we need the view for the renderer. (In this example `inputElement.php`)
 
     <div>
-      <label><?php echo $form->getParameter('label') ?>:
-        <input type="text" name="<?php echo $form->getParameter('name') ?>" 
-            value="<?php echo $form->getParameter('value', '') ?>">
+      <label><?php echo $form->getProperty('label') ?>:
+        <input type="text" name="<?php echo $form->getProperty('name') ?>" 
+            value="<?php echo $form->getProperty('value', '') ?>">
       </label>
     </div>
 
 #### Register middleware and routes (register Form)
 
-We register a simple middleware where we can can configure the form , and use this middleware on the routes which needs the form (GET and POST `/register`, because there we render or rather save). We use the `success` parameter to check if saving was successfully and perhaps redirect to `/done`. 
+We register a simple middleware where we can can configure the form , and use this middleware on the routes which needs the form (GET and POST `/register`, because there we render or rather save). We use the `success` property to check if saving was successfully and perhaps redirect to `/done`. 
 
     $mw = function ($request, $response, $next) {
       $form = $container->get('FormBuilder')->registerForm('register', \App\Forms\registerForm::class);
@@ -155,7 +155,7 @@ We register a simple middleware where we can can configure the form , and use th
     $app->post('/register', function ($request, $response, $args) {
       $form = $container->get('FormBuilder')->getForm('register');
       $form->save();
-      if ($form->getParameter('success')) {
+      if ($form->getProperty('success')) {
         return $response->withRedirect('/done');
       }
     	return $response->withRedirect('/register');
