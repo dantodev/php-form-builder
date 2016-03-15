@@ -2,6 +2,7 @@
   "name": "dtkahl/php-form-builder",
   "license": "MIT",
   "require": {
+    "php": ">=7.0.0",
     "dtkahl/php-property-trait": "^2.0"
   },
   "autoload": {
