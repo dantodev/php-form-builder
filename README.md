@@ -1,5 +1,8 @@
 # PHP Form Builder
 
+## Dependencies
+
+* `PHP >= 7.0.0`
 
 ## Example Usage (with slim framework)
 
