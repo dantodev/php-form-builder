@@ -9,7 +9,7 @@
 Install with [Composer](http://getcomposer.org):
 
 ```
-composer require dtkahl/php-collection
+composer require dtkahl/php-form-builder
 ```
 
 
