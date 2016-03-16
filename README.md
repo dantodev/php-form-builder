@@ -19,59 +19,64 @@ The container provides an instance the `FormBuilder` class. We pass an array of 
 
 Properties on FormBuilder (and later FormTrait and FormElementTrait) are implemented by using [dtkahl/php-property-trait](https://github.com/dtkahl/php-property-trait).
 
-    $container['FormBuilder'] = function ($c) {
-      return new \Dtkahl\FormBuilder\FormBuilder([
-        'renderer' => $c->get('renderer')
-      ]);
-    };
-
+```php
+$container['FormBuilder'] = function ($c) {
+  return new \Dtkahl\FormBuilder\FormBuilder([
+    'renderer' => $c->get('renderer')
+  ]);
+};
+```
 
 #### Create Form
 
 Before we can build a form, we have to create a new class which implements the interface `Dtkahl\FormBuilder\Interfaces\FormInterface` and optional (but recommended) use the trait `Dtkahl\FormBuilder\Traits\FormTrait`.
 
-    <?php namespace App\Forms;
-    
-    use Dtkahl\FormBuilder\Traits\FormTrait;
-    use Dtkahl\FormBuilder\Interfaces\FormInterface;
-    use Dtkahl\SimpleView\ViewRenderer;
-    
-    class RegisterForm implements FormInterface
-    {
-      use FormTrait;
-    
-      public function render()
-      {
-        if (!$this->_builder->getProperty('renderer') instanceof ViewRenderer) {
-          return $this->_builder->getProperty('renderer')->render('registerForm.php', [
-            'form' => $this
-          ]);
-        }
-        throw new \RuntimeException("Property 'renderer' missing!");
-      }
-      
-      public function save()
-      {
-        foreach ($this->getElements() as $element) {
-          $element->save();
-        }
-        return $this;
-      }
-    
+```php
+<?php namespace App\Forms;
+
+use Dtkahl\FormBuilder\Traits\FormTrait;
+use Dtkahl\FormBuilder\Interfaces\FormInterface;
+use Dtkahl\SimpleView\ViewRenderer;
+
+class RegisterForm implements FormInterface
+{
+  use FormTrait;
+
+  public function render()
+  {
+    if (!$this->_builder->getProperty('renderer') instanceof ViewRenderer) {
+      return $this->_builder->getProperty('renderer')->render('registerForm.php', [
+        'form' => $this
+      ]);
     }
+    throw new \RuntimeException("Property 'renderer' missing!");
+  }
+  
+  public function save()
+  {
+    foreach ($this->getElements() as $element) {
+      $element->save();
+    }
+    return $this;
+  }
+
+}
+```
 
 As you can see in the implemented interface, you need to declare a `render()` and a `save()` method. The save method should iterate over the form elements and call their save method.
 
 Now we need the view for the renderer. (In this example `registerForm.php`)
 
-    <form action="/register" method="POST">
-      <?php
-        foreach ($form->getElements() as $element) {
-          echo $element->render();
-        }
-      ?>
-      <button type="submit">Submit</button>
-    </form>
+```php
+<form action="/register" method="POST">
+  <?php
+    foreach ($form->getElements() as $element) {
+      echo $element->render();
+    }
+  ?>
+  <button type="submit">Submit</button>
+</form>
+```
 
 The view should iterate over the associated form elements and call their render method.
 
@@ -83,88 +88,94 @@ In this example, we only create a simple form element with label and text input.
 
 We create a new class which implements the interface `Dtkahl\FormBuilder\Interfaces\FormElementInterface` and optional (but recommended) use the trait `Dtkahl\FormBuilder\Traits\FormElementTrait`.
 
-    <?php namespace  App\Forms\Elements;
-    
-    use Dtkahl\FormBuilder\Traits\FormElementTrait;
-    use Dtkahl\FormBuilder\Interfaces\FormElementInterface;
-    use Dtkahl\SimpleView\ViewRenderer;
-    
-    class InputFormElement implements FormElementInterface
-    {
-      use FormElementTrait;
-    
-      public function render()
-      {
-        if ($this->_builder->getProperty('renderer') instanceof ViewRenderer) {
-          return $this->_builder->getProperty('renderer')->render('inputElement.php', [
-            'element' => $this
-          ]);
-        }
-        throw new \RuntimeException("Property 'renderer' missing!");
-      }
-    
-      public function save()
-      {
-        // TODO validate request data and perhaps save user
-        // TODO $form->setProperty('success')
-      }
-    
+```php
+<?php namespace  App\Forms\Elements;
+
+use Dtkahl\FormBuilder\Traits\FormElementTrait;
+use Dtkahl\FormBuilder\Interfaces\FormElementInterface;
+use Dtkahl\SimpleView\ViewRenderer;
+
+class InputFormElement implements FormElementInterface
+{
+  use FormElementTrait;
+
+  public function render()
+  {
+    if ($this->_builder->getProperty('renderer') instanceof ViewRenderer) {
+      return $this->_builder->getProperty('renderer')->render('inputElement.php', [
+        'element' => $this
+      ]);
     }
+    throw new \RuntimeException("Property 'renderer' missing!");
+  }
+
+  public function save()
+  {
+    // TODO validate request data and perhaps save user
+    // TODO $form->setProperty('success')
+  }
+
+}
+```
 
 As you can see in the implemented interface, you need to declare a `render()` and a `save()` method. **You should add some functionality to the save method.**
 
 Now we need the view for the renderer. (In this example `inputElement.php`)
 
-    <div>
-      <label><?php echo $form->getProperty('label') ?>:
-        <input type="text" name="<?php echo $form->getProperty('name') ?>" 
-            value="<?php echo $form->getProperty('value', '') ?>">
-      </label>
-    </div>
+```php
+<div>
+  <label><?php echo $form->getProperty('label') ?>:
+    <input type="text" name="<?php echo $form->getProperty('name') ?>" 
+        value="<?php echo $form->getProperty('value', '') ?>">
+  </label>
+</div>
+```
 
 #### Register middleware and routes (register Form)
 
 We register a simple middleware where we can can configure the form , and use this middleware on the routes which needs the form (GET and POST `/register`, because there we render or rather save). We use the `success` property to check if saving was successfully and perhaps redirect to `/done`. 
 
-    $mw = function ($request, $response, $next) {
-      $form = $container->get('FormBuilder')->registerForm('register', \App\Forms\registerForm::class);
-      
-      $form->addElement('username', [
-        'label' => 'Username',
-        'name' => 'username',
-      ]);
-      
-      $form->addElement('mail', \App\Forms\Elements\InputFormElement::class, [
-        'label' => 'Mail address',
-        'name' => 'mail',
-      ]);
-      
-      $form->addElement('password', [
-        'label' => 'Password',
-        'name' => 'password',
-      ]);
-      
-      $response = $next($request, $response);
-      return $response;
-    };
-    
-    $app->get('/register', function ($request, $response, $args) {
-    	$response->getBody()->write(
-    	  $container->get('FormBuilder')->getForm('register')->render();
-    	);
-    	return $response;
-    })->add($mw);
-    
-    $app->post('/register', function ($request, $response, $args) {
-      $form = $container->get('FormBuilder')->getForm('register');
-      $form->save();
-      if ($form->getProperty('success')) {
-        return $response->withRedirect('/done');
-      }
-    	return $response->withRedirect('/register');
-    })->add($mw);
-    
-    $app->post('/done', function ($request, $response, $args) {
-    	$response->getBody()->write("Thanks for registration!");
-    	return $response;
-    });
+```php
+$mw = function ($request, $response, $next) {
+  $form = $container->get('FormBuilder')->registerForm('register', \App\Forms\registerForm::class);
+  
+  $form->addElement('username', [
+    'label' => 'Username',
+    'name' => 'username',
+  ]);
+  
+  $form->addElement('mail', \App\Forms\Elements\InputFormElement::class, [
+    'label' => 'Mail address',
+    'name' => 'mail',
+  ]);
+  
+  $form->addElement('password', [
+    'label' => 'Password',
+    'name' => 'password',
+  ]);
+  
+  $response = $next($request, $response);
+  return $response;
+};
+
+$app->get('/register', function ($request, $response, $args) {
+	$response->getBody()->write(
+	  $container->get('FormBuilder')->getForm('register')->render();
+	);
+	return $response;
+})->add($mw);
+
+$app->post('/register', function ($request, $response, $args) {
+  $form = $container->get('FormBuilder')->getForm('register');
+  $form->save();
+  if ($form->getProperty('success')) {
+    return $response->withRedirect('/done');
+  }
+	return $response->withRedirect('/register');
+})->add($mw);
+
+$app->post('/done', function ($request, $response, $args) {
+	$response->getBody()->write("Thanks for registration!");
+	return $response;
+});
+```
