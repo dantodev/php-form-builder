@@ -4,6 +4,15 @@
 
 * `PHP >= 7.0.0`
 
+## Installation
+
+Install with [Composer](http://getcomposer.org):
+
+```
+composer require dtkahl/php-collection
+```
+
+
 ## Example Usage (with slim framework)
 
 This Example demonstrates the implementation of a user registration form. The `FormBuilder` is designed for more complex forms than a registration form, but for demonstration purposes, we make an exception. ;)
