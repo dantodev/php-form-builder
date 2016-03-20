@@ -1,5 +1,6 @@
 [![Latest Stable Version](https://poser.pugx.org/dtkahl/php-form-builder/v/stable)](https://packagist.org/packages/dtkahl/php-form-builder)
 [![License](https://poser.pugx.org/dtkahl/php-form-builder/license)](https://packagist.org/packages/dtkahl/php-form-builder)
+[![Build Status](https://travis-ci.org/dtkahl/php-form-builder.svg?branch=master)](https://travis-ci.org/dtkahl/php-form-builder)
 
 # PHP Form Builder
 
