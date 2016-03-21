@@ -1,13 +1,15 @@
 <?php namespace Dtkahl\FormBuilder;
 
 use Dtkahl\FormBuilder\Interfaces\FormInterface;
-use Dtkahl\PropertyTrait\PropertyTrait;
+use Dtkahl\PropertyHolder\PropertyHolder;
 
 class FormBuilder
 {
-  use PropertyTrait;
 
   private $_forms = [];
+
+  /** @var PropertyHolder $properties */
+  private $properties;
 
   /**
    * FormBuilder constructor.
@@ -15,7 +17,7 @@ class FormBuilder
    */
   public function __construct(array $properties = [])
   {
-    $this->initProperties($properties);
+    $this->properties = new PropertyHolder($properties);
   }
 
   /**

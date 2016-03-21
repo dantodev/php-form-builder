@@ -3,18 +3,20 @@
 use Dtkahl\FormBuilder\FormBuilder;
 use Dtkahl\FormBuilder\Interfaces\FormElementInterface;
 use Dtkahl\FormBuilder\Interfaces\FormInterface;
-use Dtkahl\PropertyTrait\PropertyTrait;
+use Dtkahl\PropertyHolder\PropertyHolder;
 
 /**
  * @mixin FormElementInterface
  */
 trait FormElementTrait
 {
-  use PropertyTrait;
 
   private $_name;
   private $_builder;
   private $_form;
+
+  /** @var PropertyHolder $properties */
+  public $properties;
 
   /**
    * FormElementTrait constructor.
@@ -28,7 +30,7 @@ trait FormElementTrait
     $this->_name = $name;
     $this->_builder = $builder;
     $this->_form = $form;
-    $this->initProperties($properties);
+    $this->_properties = new PropertyHolder($properties);
   }
 
   public function getName()
