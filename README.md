@@ -6,7 +6,8 @@
 
 ## Dependencies
 
-* `PHP >= 7.0.0`
+* `PHP  >=7.0.0`
+* dtkahl/php-property-holder ^1.0
 
 ## Installation
 
