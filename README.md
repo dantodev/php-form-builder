@@ -30,7 +30,7 @@ The example uses some traits (e.g. `Dtkahl\FormBuilder\Traits\FormTrait`) with s
 
 The container provides an instance the `FormBuilder` class. We pass an array of properites to the constructor. (Optional, but needed in this example).
 
-Properties on FormBuilder (and later FormTrait and FormElementTrait) are implemented by using [dtkahl/php-property-trait](https://github.com/dtkahl/php-property-trait).
+Properties on FormBuilder (and later FormTrait and FormElementTrait) are implemented by using [dtkahl/php-property-holder](https://github.com/dtkahl/php-property-holder).
 
 ```php
 $container['FormBuilder'] = function ($c) {
@@ -57,8 +57,8 @@ class RegisterForm implements FormInterface
 
   public function render()
   {
-    if (!$this->_builder->getProperty('renderer') instanceof ViewRenderer) {
-      return $this->_builder->getProperty('renderer')->render('registerForm.php', [
+    if (!$this->_builder->properties->get('renderer') instanceof ViewRenderer) {
+      return $this->_builder->properties->get('renderer')->render('registerForm.php', [
         'form' => $this
       ]);
     }
@@ -114,8 +114,8 @@ class InputFormElement implements FormElementInterface
 
   public function render()
   {
-    if ($this->_builder->getProperty('renderer') instanceof ViewRenderer) {
-      return $this->_builder->getProperty('renderer')->render('inputElement.php', [
+    if ($this->_builder->properties->get('renderer') instanceof ViewRenderer) {
+      return $this->_builder->properties->get('renderer')->render('inputElement.php', [
         'element' => $this
       ]);
     }
@@ -125,7 +125,7 @@ class InputFormElement implements FormElementInterface
   public function save()
   {
     // TODO validate request data and perhaps save user
-    // TODO $form->setProperty('success')
+    // TODO $form->properties->set('success')
   }
 
 }
@@ -138,8 +138,8 @@ Now we need the view for the renderer. (In this example `inputElement.php`)
 ```php
 <div>
   <label><?php echo $form->getProperty('label') ?>:
-    <input type="text" name="<?php echo $form->getProperty('name') ?>" 
-        value="<?php echo $form->getProperty('value', '') ?>">
+    <input type="text" name="<?php echo $form->properties->get('name') ?>" 
+        value="<?php echo $form->properties->get('value', '') ?>">
   </label>
 </div>
 ```
@@ -181,7 +181,7 @@ $app->get('/register', function ($request, $response, $args) {
 $app->post('/register', function ($request, $response, $args) {
   $form = $container->get('FormBuilder')->getForm('register');
   $form->save();
-  if ($form->getProperty('success')) {
+  if ($form->properties->get('success')) {
     return $response->withRedirect('/done');
   }
 	return $response->withRedirect('/register');
