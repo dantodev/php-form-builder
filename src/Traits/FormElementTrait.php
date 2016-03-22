@@ -3,7 +3,7 @@
 use Dtkahl\FormBuilder\FormBuilder;
 use Dtkahl\FormBuilder\Interfaces\FormElementInterface;
 use Dtkahl\FormBuilder\Interfaces\FormInterface;
-use Dtkahl\PropertyHolder\PropertyHolder;
+use Dtkahl\ArrayTools\Map;
 
 /**
  * @mixin FormElementInterface
@@ -15,7 +15,7 @@ trait FormElementTrait
   private $_builder;
   private $_form;
 
-  /** @var PropertyHolder $properties */
+  /** @var Map $properties */
   public $properties;
 
   /**
@@ -30,7 +30,7 @@ trait FormElementTrait
     $this->_name = $name;
     $this->_builder = $builder;
     $this->_form = $form;
-    $this->_properties = new PropertyHolder($properties);
+    $this->properties = new Map($properties);
   }
 
   public function getName()

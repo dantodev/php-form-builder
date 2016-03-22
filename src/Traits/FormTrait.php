@@ -1,9 +1,9 @@
 <?php namespace Dtkahl\FormBuilder\Traits;
 
+use Dtkahl\ArrayTools\Map;
 use Dtkahl\FormBuilder\FormBuilder;
 use Dtkahl\FormBuilder\Interfaces\FormElementInterface;
 use Dtkahl\FormBuilder\Interfaces\FormInterface;
-use Dtkahl\PropertyHolder\PropertyHolder;
 
 /**
  * @mixin FormInterface
@@ -15,7 +15,7 @@ trait FormTrait
   private $_builder;
   private $_elements = [];
 
-  /** @var PropertyHolder $properties */
+  /** @var Map $properties */
   public $properties;
 
   /**
@@ -28,7 +28,7 @@ trait FormTrait
   {
     $this->_name = $name;
     $this->_builder = $builder;
-    $this->properties = new PropertyHolder($properties);
+    $this->properties = new Map($properties);
   }
 
   /**
