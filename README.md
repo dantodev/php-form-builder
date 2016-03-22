@@ -7,7 +7,7 @@
 ## Dependencies
 
 * `PHP  >=7.0.0`
-* `dtkahl/php-property-holder ^1.0`
+* `dtkahl/php-array-tools ^2.0`
 
 ## Installation
 
@@ -31,7 +31,7 @@ The example uses some traits (e.g. `Dtkahl\FormBuilder\Traits\FormTrait`) with s
 
 The container provides an instance the `FormBuilder` class. We pass an array of properites to the constructor. (Optional, but needed in this example).
 
-Properties on FormBuilder (and later FormTrait and FormElementTrait) are implemented by using [dtkahl/php-property-holder](https://github.com/dtkahl/php-property-holder).
+Properties on FormBuilder (and later FormTrait and FormElementTrait) are implemented by using [dtkahl/php-array-tools](https://github.com/dtkahl/php-array-tools).
 
 ```php
 $container['FormBuilder'] = function ($c) {
