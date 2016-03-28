@@ -37,7 +37,7 @@ trait FormTrait
    * @param array $options
    * @return $this
    */
-  public function registerElement($name, string $element, array $options = [])
+  public function registerElement($name, $element, array $options = [])
   {
     if (array_key_exists($name, $this->_elements)) {
       throw new \RuntimeException("Form element with name '$name' already registered!");

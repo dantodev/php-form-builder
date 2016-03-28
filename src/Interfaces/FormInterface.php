@@ -23,7 +23,7 @@ interface FormInterface
    * @param array $properties
    * @return mixed
    */
-  public function registerElement($name, string $element, array $properties = []);
+  public function registerElement($name, $element, array $properties = []);
 
   /**
    * @return FormElementInterface[]

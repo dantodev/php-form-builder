@@ -26,7 +26,7 @@ class FormBuilder
    * @param array $properties
    * @return FormInterface
    */
-  public function registerForm($name, string $class, array $properties = [])
+  public function registerForm($name, $class, array $properties = [])
   {
     if (array_key_exists($name, $this->_forms)) {
       throw new \RuntimeException("Form with name '$name' already registered!");
