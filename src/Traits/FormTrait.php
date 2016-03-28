@@ -24,7 +24,7 @@ trait FormTrait
    * @param FormBuilder $builder
    * @param array $properties
    */
-  public function __construct(string $name, FormBuilder $builder, array $properties = [])
+  public function __construct($name, FormBuilder $builder, array $properties = [])
   {
     $this->_name = $name;
     $this->_builder = $builder;
@@ -37,7 +37,7 @@ trait FormTrait
    * @param array $options
    * @return $this
    */
-  public function registerElement(string $name, string $element, array $options = [])
+  public function registerElement($name, string $element, array $options = [])
   {
     if (array_key_exists($name, $this->_elements)) {
       throw new \RuntimeException("Form element with name '$name' already registered!");

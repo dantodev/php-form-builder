@@ -2,7 +2,7 @@
   "name": "dtkahl/php-form-builder",
   "license": "MIT",
   "require": {
-    "php": ">=7.0.0",
+    "php": ">=5.6.0",
     "dtkahl/php-array-tools": "^2.0"
   },
   "require-dev": {

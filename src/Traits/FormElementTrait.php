@@ -25,7 +25,7 @@ trait FormElementTrait
    * @param FormInterface $form
    * @param array $properties
    */
-  public function __construct(string $name, FormBuilder $builder, FormInterface $form,  array $properties = [])
+  public function __construct($name, FormBuilder $builder, FormInterface $form,  array $properties = [])
   {
     $this->_name = $name;
     $this->_builder = $builder;

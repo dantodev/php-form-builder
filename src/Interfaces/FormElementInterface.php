@@ -16,7 +16,7 @@ interface FormElementInterface
    * @param FormInterface $form
    * @param array $properties
    */
-  public function __construct(string $name, FormBuilder $builder, FormInterface $form, array $properties = []);
+  public function __construct($name, FormBuilder $builder, FormInterface $form, array $properties = []);
 
   /**
    * @return string

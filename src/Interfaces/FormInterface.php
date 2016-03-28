@@ -15,7 +15,7 @@ interface FormInterface
    * @param FormBuilder $builder
    * @param array $properties
    */
-  public function __construct(string $name, FormBuilder $builder, array $properties = []);
+  public function __construct($name, FormBuilder $builder, array $properties = []);
 
   /**
    * @param string $name
@@ -23,7 +23,7 @@ interface FormInterface
    * @param array $properties
    * @return mixed
    */
-  public function registerElement(string $name, string $element, array $properties = []);
+  public function registerElement($name, string $element, array $properties = []);
 
   /**
    * @return FormElementInterface[]

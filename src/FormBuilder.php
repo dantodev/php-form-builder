@@ -26,7 +26,7 @@ class FormBuilder
    * @param array $properties
    * @return FormInterface
    */
-  public function registerForm(string $name, string $class, array $properties = [])
+  public function registerForm($name, string $class, array $properties = [])
   {
     if (array_key_exists($name, $this->_forms)) {
       throw new \RuntimeException("Form with name '$name' already registered!");
@@ -39,7 +39,7 @@ class FormBuilder
    * @param string $name
    * @return FormInterface
    */
-  public function getForm(string $name)
+  public function getForm($name)
   {
     if (!array_key_exists($name, $this->_forms)) {
       throw new \RuntimeException("Form with name '$name' not registered!");
