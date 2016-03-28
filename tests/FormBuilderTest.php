@@ -25,7 +25,7 @@ class FormBuilderTest extends \PHPUnit_Framework_TestCase
     $this->form->render();
     $this->assertEquals(
         ['test_element1_render' => true, 'test_element2_render' => true],
-        $this->form->properties->all()
+        $this->form->properties->toArray()
     );
   }
 
@@ -34,7 +34,7 @@ class FormBuilderTest extends \PHPUnit_Framework_TestCase
     $this->form->save();
     $this->assertEquals(
         ['test_element1_save' => true, 'test_element2_save' => true],
-        $this->form->properties->all()
+        $this->form->properties->toArray()
     );
   }
 
