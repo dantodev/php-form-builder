@@ -1,19 +1,15 @@
-<?php namespace Dtkahl\FormBuilder\Traits;
+<?php namespace Dtkahl\FormBuilder;
 
 use Dtkahl\ArrayTools\Map;
-use Dtkahl\FormBuilder\FormBuilder;
 use Dtkahl\FormBuilder\Interfaces\FormElementInterface;
 use Dtkahl\FormBuilder\Interfaces\FormInterface;
 
-/**
- * @mixin FormInterface
- */
-trait FormTrait
+abstract class Form implements FormInterface
 {
 
-  private $_name;
-  private $_builder;
-  private $_elements = [];
+  protected $_name;
+  protected $_builder;
+  protected $_elements = [];
 
   /** @var Map $properties */
   public $properties;

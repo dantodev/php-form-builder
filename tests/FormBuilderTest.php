@@ -1,15 +1,12 @@
 <?php namespace Dtkahl\FormBuilder;
 
 use Dtkahl\FormBuilder\Interfaces\FormElementInterface;
-use Dtkahl\FormBuilder\Interfaces\FormInterface;
-use Dtkahl\FormBuilder\Traits\FormElementTrait;
-use Dtkahl\FormBuilder\Traits\FormTrait;
 
 class FormBuilderTest extends \PHPUnit_Framework_TestCase
 {
 
   /**
-   * @var FormElementInterface
+   * @var Form
    */
   public $form;
 
@@ -40,9 +37,8 @@ class FormBuilderTest extends \PHPUnit_Framework_TestCase
 
 }
 
-class TestForm implements FormInterface
+class TestForm extends Form
 {
-  use FormTrait;
 
   public function render()
   {
@@ -62,9 +58,8 @@ class TestForm implements FormInterface
 
 }
 
-class TestElement implements FormElementInterface
+class TestElement extends FormElement
 {
-  use FormElementTrait;
 
   public function render()
   {
