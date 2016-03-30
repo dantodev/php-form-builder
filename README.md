@@ -24,14 +24,12 @@ This Example demonstrates the implementation of a user registration form. The `F
 
 The builder is based on `Form` and `FormElement` classes. `Form` classes get registered on `FormBuilder` while `FormElement` classes are associated with `Form` instances.
 
-The example uses some traits (e.g. `Dtkahl\FormBuilder\Traits\FormTrait`) with some basic methods which are required by the interfaces, you have to implement for `Form` and `FormElement` classes. I do highly recommend to use them to save a bunch of time. :)
-
 
 #### Create Container
 
 The container provides an instance the `FormBuilder` class. We pass an array of properites to the constructor. (Optional, but needed in this example).
 
-Properties on FormBuilder (and later FormTrait and FormElementTrait) are implemented by using [dtkahl/php-array-tools](https://github.com/dtkahl/php-array-tools).
+Properties on FormBuilder (and later Form and FormElement) are implemented by using [dtkahl/php-array-tools](https://github.com/dtkahl/php-array-tools).
 
 ```php
 $container['FormBuilder'] = function ($c) {
@@ -43,18 +41,16 @@ $container['FormBuilder'] = function ($c) {
 
 #### Create Form
 
-Before we can build a form, we have to create a new class which implements the interface `Dtkahl\FormBuilder\Interfaces\FormInterface` and optional (but recommended) use the trait `Dtkahl\FormBuilder\Traits\FormTrait`.
+Before we can build a form, we have to create a new class which extends the abstract class `Dtkahl\FormBuilder\Form`.
 
 ```php
 <?php namespace App\Forms;
 
-use Dtkahl\FormBuilder\Traits\FormTrait;
-use Dtkahl\FormBuilder\Interfaces\FormInterface;
+use Dtkahl\FormBuilder\Form;
 use Dtkahl\SimpleView\ViewRenderer;
 
-class RegisterForm implements FormInterface
+class RegisterForm extends Form
 {
-  use FormTrait;
 
   public function render()
   {
@@ -100,18 +96,16 @@ The view should iterate over the associated form elements and call their render 
 
 In this example, we only create a simple form element with label and text input. It is possible to build far more complex elements than this.
 
-We create a new class which implements the interface `Dtkahl\FormBuilder\Interfaces\FormElementInterface` and optional (but recommended) use the trait `Dtkahl\FormBuilder\Traits\FormElementTrait`.
+We create a new class which extends the abstract class `Dtkahl\FormBuilder\FormElement`.
 
 ```php
 <?php namespace  App\Forms\Elements;
 
-use Dtkahl\FormBuilder\Traits\FormElementTrait;
-use Dtkahl\FormBuilder\Interfaces\FormElementInterface;
+use Dtkahl\FormBuilder\FormElement;
 use Dtkahl\SimpleView\ViewRenderer;
 
-class InputFormElement implements FormElementInterface
+class InputFormElement extends FormElement
 {
-  use FormElementTrait;
 
   public function render()
   {
