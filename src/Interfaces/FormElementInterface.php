@@ -1,11 +1,7 @@
 <?php namespace Dtkahl\FormBuilder\Interfaces;
 
+use Dtkahl\FormBuilder\Form;
 use Dtkahl\FormBuilder\FormBuilder;
-use Dtkahl\FormBuilder\Traits\FormElementTrait;
-
-/**
- * @mixin FormElementTrait
- */
 interface FormElementInterface
 {
 
@@ -13,10 +9,10 @@ interface FormElementInterface
    * FormElementInterface constructor.
    * @param string $name
    * @param FormBuilder $builder
-   * @param FormInterface $form
+   * @param Form $form
    * @param array $properties
    */
-  public function __construct($name, FormBuilder $builder, FormInterface $form, array $properties = []);
+  public function __construct($name, FormBuilder $builder, Form $form, array $properties = []);
 
   /**
    * @return string

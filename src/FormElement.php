@@ -1,7 +1,6 @@
 <?php namespace Dtkahl\FormBuilder;
 
 use Dtkahl\FormBuilder\Interfaces\FormElementInterface;
-use Dtkahl\FormBuilder\Interfaces\FormInterface;
 use Dtkahl\ArrayTools\Map;
 
 abstract class FormElement implements FormElementInterface
@@ -18,10 +17,10 @@ abstract class FormElement implements FormElementInterface
    * FormElementTrait constructor.
    * @param string $name
    * @param FormBuilder $builder
-   * @param FormInterface $form
+   * @param Form $form
    * @param array $properties
    */
-  public function __construct($name, FormBuilder $builder, FormInterface $form,  array $properties = [])
+  public function __construct($name, FormBuilder $builder, Form $form,  array $properties = [])
   {
     $this->_name = $name;
     $this->_builder = $builder;

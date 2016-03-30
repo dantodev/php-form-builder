@@ -1,11 +1,7 @@
 <?php namespace Dtkahl\FormBuilder\Interfaces;
 
 use Dtkahl\FormBuilder\FormBuilder;
-use Dtkahl\FormBuilder\Traits\FormTrait;
 
-/**
- * @mixin FormTrait
- */
 interface FormInterface
 {
 
