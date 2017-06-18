@@ -1,36 +1,22 @@
 <?php namespace Dtkahl\FormBuilder;
 
-use Dtkahl\FormBuilder\Interfaces\FormElementInterface;
-use Dtkahl\ArrayTools\Map;
-
-abstract class FormElement implements FormElementInterface
+abstract class FormElement
 {
 
-    protected $_name;
-    protected $_builder;
-    protected $_form;
-
-    /** @var Map $properties */
-    public $properties;
+    /**
+     * @param $data
+     * @return mixed|void
+     */
+    abstract public function hydrate($data);
 
     /**
-     * FormElementTrait constructor.
-     * @param string $name
-     * @param FormBuilder $builder
-     * @param Form $form
-     * @param array $properties
+     * @return mixed|void
      */
-    public function __construct($name, FormBuilder $builder, Form $form, array $properties = [])
-    {
-        $this->_name = $name;
-        $this->_builder = $builder;
-        $this->_form = $form;
-        $this->properties = new Map($properties);
-    }
+    abstract public function render();
 
-    public function getName()
-    {
-        return $this->_name;
-    }
+    /**
+     * @return mixed|void
+     */
+    abstract public function save();
 
 }

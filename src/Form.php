@@ -1,59 +1,87 @@
 <?php namespace Dtkahl\FormBuilder;
 
 use Dtkahl\ArrayTools\Map;
-use Dtkahl\FormBuilder\Interfaces\FormElementInterface;
-use Dtkahl\FormBuilder\Interfaces\FormInterface;
 
-abstract class Form implements FormInterface
+abstract class Form
 {
-
-    protected $_name;
-    protected $_builder;
-    protected $_elements = [];
-
-    /** @var Map $properties */
-    public $properties;
+    /** @var Map|FormElement[] */
+    protected $fields = [];
+    protected $properties;
 
     /**
-     * FormTrait constructor.
-     * @param string $name
-     * @param FormBuilder $builder
      * @param array $properties
      */
-    public function __construct($name, FormBuilder $builder, array $properties = [])
+    public function __construct(array $properties = [])
     {
-        $this->_name = $name;
-        $this->_builder = $builder;
         $this->properties = new Map($properties);
+        $this->fields = new Map();
+        $this->setUp();
     }
 
+    abstract public function setUp();
+
     /**
-     * @param string $name
-     * @param string $element
-     * @param array $options
+     * @param string $identifier
+     * @param FormElement $element
      * @return $this
      */
-    public function registerElement($name, $element, array $options = [])
+    protected function addField($identifier, FormElement $element)
     {
-        if (array_key_exists($name, $this->_elements)) {
-            throw new \RuntimeException("Form element with name '$name' already registered!");
+        if (array_key_exists($identifier, $this->fields)) {
+            throw new \RuntimeException("Form field with name '$identifier' already exists!");
         }
-
-        $this->_elements[$name] = new $element($name, $this->_builder, $this, $options);
+        $this->fields->set($identifier, $element);
         return $this;
     }
 
     /**
-     * @return FormElementInterface[]
+     * @return Map|FormElement[]
      */
-    public function getElements()
+    public function fields()
     {
-        return $this->_elements;
+        return $this->fields;
     }
 
-    public function getName()
+    /**
+     * @param $identifier
+     * @return FormElement
+     */
+    public function field($identifier)
     {
-        return $this->_name;
+        return $this->fields->get($identifier);
     }
 
+    /**
+     * @param array $data
+     * @return mixed|void
+     */
+    public function hydrate(array $data)
+    {
+        foreach ($data as $identifier=>$field_data) {
+            $field = $this->fields->get($identifier);
+            if ($field instanceof FormElement) {
+                $field->hydrate($field_data);
+            }
+        }
+    }
+
+    /**
+     * @return mixed|void
+     */
+    public function render()
+    {
+        foreach ($this->fields as $field) {
+            $field->render();
+        }
+    }
+
+    /**
+     * @return mixed|void
+     */
+    public function save()
+    {
+        foreach ($this->fields as $field) {
+            $field->save();
+        }
+    }
 }
