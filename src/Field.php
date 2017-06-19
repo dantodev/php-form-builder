@@ -3,8 +3,19 @@
 class Field
 {
 
+    protected $name = null;
     protected $value = null;
     protected $label = null;
+
+    public function setName($name)
+    {
+        $this->name = $name;
+    }
+
+    public function getName()
+    {
+        return $this->name;
+    }
 
     public function setLabel($label)
     {

@@ -40,15 +40,15 @@ abstract class FieldSet
 
     /**
      * @param string $name
-     * @param Field $element
-     * @return $this
+     * @param Field $field
+     * @return Field
      */
-    protected function setField(string $name, Field $element)
+    protected function setField(string $name, Field $field)
     {
         $this->field_sets->remove($name); // because name must be unique
-        $this->fields->set($name, $element);
-        $element->setLabel($name);
-        return $this;
+        $this->fields->set($name, $field);
+        $field->setName($name);
+        return $field;
     }
 
     /**
@@ -67,13 +67,13 @@ abstract class FieldSet
     /**
      * @param $name
      * @param FieldSet $field_set
-     * @return $this
+     * @return FieldSet
      */
     public function setFieldSet(string $name, FieldSet $field_set)
     {
         $this->fields->remove($name); // because name must be unique
         $this->field_sets->set($name, $field_set);
-        return $this;
+        return $field_set;
     }
 
     /**
@@ -98,6 +98,15 @@ abstract class FieldSet
     {
         $this->getField($name)->setLabel($label);
         return $this;
+    }
+
+  /**
+   * @param string $name
+   * @return string
+   */
+    public function getLabel(string $name)
+    {
+        return $this->getField($name)->getLabel();
     }
 
     /**
@@ -162,7 +171,7 @@ abstract class FieldSet
         $invalid_fields = $this->fields->copy()->filter(function (string $name, Field $field) {
             $validator = $this->validators->get($name);
             if ($validator instanceof Validator) {
-                $validator->setName($name);
+                $validator->setName($this->getLabel($name) ?: $name);
                 try {
                     $validator->assert($field->getValue());
                 } catch (NestedValidationException $e) {
