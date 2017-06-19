@@ -42,7 +42,7 @@ class FormBuilderTest extends \PHPUnit_Framework_TestCase
         };
     }
 
-    public function testValidationMessages()
+    public function testValidationAndMessages()
     {
         $this->assertFalse($this->form->isValid());
         $this->assertEquals(["email", "name"], array_keys($this->form->getMessages()));
@@ -70,7 +70,6 @@ class FormBuilderTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('john.smith@tardis.space', $this->form->getValue('email'));
         $this->assertEquals(42, $this->form->getValue('age'));
         $this->assertEquals('John', $this->form->getFieldSet('name')->getValue('first_name'));
-        $this->assertTrue($this->form->isValid());
     }
 
 }
