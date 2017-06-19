@@ -38,7 +38,6 @@ class FormBuilderTest extends \PHPUnit_Framework_TestCase
             public function setUpValidators() {
                 $this->setValidator('email', Validator::email());
             }
-            public function save() {}
         };
     }
 
