@@ -44,13 +44,20 @@ class FormBuilderTest extends \PHPUnit_Framework_TestCase
 
     public function testValidationMessages()
     {
-//        $this->assertFalse($this->form->isValid());
-//        $this->form->getField('email')->setValue(12);
-//        $this->form->getFieldSet('name')->getField('first_name')->setValue('John');
-//        $this->form->getFieldSet('name')->getField('last_name')->setValue('Smith');
-//        $this->assertFalse($this->form->isValid());
-//        $this->form->getField('email')->setValue('john.smith@tardis.space');
-//        $this->assertTrue($this->form->isValid());
+        $this->assertFalse($this->form->isValid());
+        $this->assertEquals(["email", "name"], array_keys($this->form->getMessages()));
+        $this->form->getField('email')->setValue(12);
+        $this->form->getFieldSet('name')->getField('first_name')->setValue('John');
+        $this->form->getFieldSet('name')->getField('last_name')->setValue('Smith');
+        $this->assertFalse($this->form->isValid());
+        $this->assertTrue($this->form->hasMessages());
+        $this->assertTrue($this->form->hasMessages('email'));
+        $this->assertEquals(["email"], array_keys($this->form->getMessages()));
+        $this->form->getField('email')->setValue('john.smith@tardis.space');
+        $this->assertTrue($this->form->isValid());
+        $this->assertFalse($this->form->hasMessages());
+        $this->assertFalse($this->form->hasMessages('email'));
+        $this->assertEmpty(array_keys($this->form->getMessages()));
     }
 
     public function testHydrate()
@@ -64,7 +71,6 @@ class FormBuilderTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(42, $this->form->getValue('age'));
         $this->assertEquals('John', $this->form->getFieldSet('name')->getValue('first_name'));
         $this->assertTrue($this->form->isValid());
-
     }
 
 }

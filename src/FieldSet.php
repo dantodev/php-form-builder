@@ -18,6 +18,8 @@ abstract class FieldSet
     
     protected $messages;
 
+    protected $params = [];
+
     public function __construct()
     {
         $this->fields = new Map;
@@ -30,6 +32,7 @@ abstract class FieldSet
     abstract public function setUp();
 
     /**
+     * TODO docs
      * Set up the Field Validators here separately. This is only called when validation actually runs so you can use
      * field values as conditions.
      */
@@ -163,16 +166,19 @@ abstract class FieldSet
                 try {
                     $validator->assert($field->getValue());
                 } catch (NestedValidationException $e) {
+                    $e->setParams($this->params); // TODO doc
                     $this->messages->set($name, $e->getMessages());
                     return true;
                 }
             }
+            return false;
         });
-        $invalid_field_sets = $this->field_sets->each(function (string $name, FieldSet $field_set) {
+        $invalid_field_sets = $this->field_sets->copy()->filter(function (string $name, FieldSet $field_set) {
             if (!$field_set->isValid()) {
                 $this->messages->set($name, $field_set->getMessages());
                 return true;
             }
+            return false;
         });
         return $invalid_fields->count() == 0 && $invalid_field_sets->count() == 0;
     }
@@ -187,5 +193,17 @@ abstract class FieldSet
             return $this->messages->toArray();
         }
         return $this->messages->get($name, []);
+    }
+
+    /**
+     * @param string|null $name
+     * @return bool
+     */
+    public function hasMessages(string $name = null)
+    {
+        if (is_null($name)) {
+            return !$this->messages->isEmpty();
+        }
+        return $this->messages->has($name);
     }
 }
