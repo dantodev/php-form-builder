@@ -22,7 +22,6 @@ class FormBuilderTest extends \PHPUnit_Framework_TestCase
                 $this->setValidator('first_name', Validator::stringType());
                 $this->setValidator('last_name', Validator::stringType());
             }
-            public function save() {}
         };
         $this->form = new class($sub_form) extends FieldSet {
             private $sub_form;
