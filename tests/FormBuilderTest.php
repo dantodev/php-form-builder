@@ -67,7 +67,7 @@ class FormBuilderTest extends \PHPUnit_Framework_TestCase
             'email' => 'john.smith@tardis.space',
             'age' => 42
         ]);
-        $this->assertEquals('john.smith@tardis.space', $this->form->getValue('email'));
+        $this->assertEquals('sjohn.smith@tardis.space', $this->form->getValue('email'));
         $this->assertEquals(42, $this->form->getValue('age'));
         $this->assertEquals('John', $this->form->getFieldSet('name')->getValue('first_name'));
         $this->assertTrue($this->form->isValid());
