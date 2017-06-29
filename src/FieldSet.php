@@ -45,10 +45,20 @@ abstract class FieldSet implements \ArrayAccess
      */
     protected function setField(string $name, Field $field)
     {
-        $this->field_sets->remove($name); // because name must be unique
+        $this->removeFieldSet($name); // because name must be unique
         $this->fields->set($name, $field);
         $field->setName($name);
         return $field;
+    }
+
+    /**
+     * @param string $name
+     */
+    protected function removeField(string $name)
+    {
+        $this->fields->remove($name);
+        $this->messages->remove($name);
+        $this->validators->remove($name);
     }
 
     /**
@@ -71,9 +81,19 @@ abstract class FieldSet implements \ArrayAccess
      */
     public function setFieldSet(string $name, FieldSet $field_set)
     {
-        $this->fields->remove($name); // because name must be unique
+        $this->removeField($name); // because name must be unique
         $this->field_sets->set($name, $field_set);
         return $field_set;
+    }
+
+    /**
+     * @param string $name
+     */
+    protected function removeFieldSet(string $name)
+    {
+        $this->field_sets->remove($name);
+        $this->messages->remove($name);
+        $this->validators->remove($name);
     }
 
     /**
@@ -245,8 +265,8 @@ abstract class FieldSet implements \ArrayAccess
 
     public function offsetUnset($offset)
     {
-        $this->fields->remove($offset);
-        $this->field_sets->remove($offset);
+        $this->removeField($offset);
+        $this->removeFieldSet($offset);
     }
 
 }
