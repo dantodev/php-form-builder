@@ -5,7 +5,7 @@ use Respect\Validation\Exceptions\NestedValidationException;
 use Respect\Validation\Validator;
 
 // TODO custom messages/translations
-abstract class FieldSet
+abstract class FieldSet implements \ArrayAccess
 {
     /** @var Map|Field[] */
     protected $fields;
@@ -215,4 +215,38 @@ abstract class FieldSet
         }
         return $this->messages->has($name);
     }
+
+    public function offsetGet($offset)
+    {
+        if ($this->fields->has($offset)) {
+            return $this->fields->get($offset);
+        } elseif ($this->field_sets->has($offset)) {
+            return $this->field_sets->get($offset);
+        } else {
+            return null;
+        }
+    }
+
+    public function offsetSet($offset, $value)
+    {
+        if ($value instanceof Field) {
+            $this->setField($offset, $value);
+        } elseif ($value instanceof FieldSet) {
+            $this->setFieldSet($offset, $value);
+        } else {
+            throw new \InvalidArgumentException("The Value must be an instance of Field or FieldSet");
+        }
+    }
+
+    public function offsetExists($offset)
+    {
+        return $this->fields->has($offset) || $this->field_sets->has($offset);
+    }
+
+    public function offsetUnset($offset)
+    {
+        $this->fields->remove($offset);
+        $this->field_sets->remove($offset);
+    }
+
 }

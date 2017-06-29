@@ -10,6 +10,7 @@ class FormBuilderTest extends \PHPUnit_Framework_TestCase
 
     /** @var FieldSet */
     public $form;
+    public $sub_form;
 
     public function setUp()
     {
@@ -23,6 +24,7 @@ class FormBuilderTest extends \PHPUnit_Framework_TestCase
                 $this->setValidator('last_name', Validator::stringType());
             }
         };
+        $this->sub_form = $sub_form;
         $this->form = new class($sub_form) extends FieldSet {
             private $sub_form;
             public function __construct($sub_form) {
@@ -68,6 +70,24 @@ class FormBuilderTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('john.smith@tardis.space', $this->form->getValue('email'));
         $this->assertEquals(42, $this->form->getValue('age'));
         $this->assertEquals('John', $this->form->getFieldSet('name')->getValue('first_name'));
+    }
+
+    public function testArrayAccess()
+    {
+        $this->assertNull($this->form['foo']);
+        $this->assertFalse(isset($this->form['foo']));
+        $this->assertTrue(isset($this->form['email']));
+        $this->assertTrue(isset($this->form['name']));
+        $this->assertInstanceOf(Field::class, $this->form['email']);
+        $this->assertInstanceOf(FieldSet::class, $this->form['name']);
+        unset($this->form['email']);
+        $this->assertNull($this->form['email']);
+        unset($this->form['name']);
+        $this->assertNull($this->form['name']);
+        $this->form['email'] = new Field;
+        $this->assertInstanceOf(Field::class, $this->form['email']);
+        $this->form['name'] = $this->sub_form;
+        $this->assertInstanceOf(FieldSet::class, $this->form['name']);
     }
 
 }
