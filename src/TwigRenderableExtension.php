@@ -18,7 +18,7 @@ class TwigRenderableExtension extends \Twig_Extension
 
     public function getFunctions()
     {
-        return [new \Twig_Function("render", function (TwigRenderableInterface $object) {
+        return [new \Twig_Function("render", function (TwigRenderableInterface $object) { // TODO as custom Tag instead? because of raw problem..
             return $this->twig_environment->loadTemplate($object->getTemplate())->render($object->getRenderData());
         })];
     }
