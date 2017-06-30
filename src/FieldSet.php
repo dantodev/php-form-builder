@@ -5,7 +5,7 @@ use Respect\Validation\Exceptions\NestedValidationException;
 use Respect\Validation\Validator;
 
 // TODO custom messages/translations
-abstract class FieldSet implements \ArrayAccess
+abstract class FieldSet implements \ArrayAccess, TwigRenderableInterface
 {
     /** @var Map|Field[] */
     protected $fields;
@@ -15,17 +15,22 @@ abstract class FieldSet implements \ArrayAccess
 
     /** @var Validator[] */
     protected $validators;
-    
+
+    /** @var Map */
     protected $messages;
 
+    /** @var array  */
     protected $params = [];
+
+    /** @var null */
+    protected $template = null;
 
     public function __construct()
     {
         $this->fields = new Map;
         $this->field_sets = new Map;
-        $this->validators = new Map;
-        $this->messages = new Map;
+        $this->validators = new Map; // TODO move to Field/FieldSet?
+        $this->messages = new Map; // TODO move to Field/FieldSet?
         $this->setUp();
     }
 
@@ -266,7 +271,21 @@ abstract class FieldSet implements \ArrayAccess
     public function offsetUnset($offset)
     {
         $this->removeField($offset);
-        $this->removeFieldSet($offset);
+        $this->removeFieldSet(
+            $offset);
+    }
+
+    public function getTemplate(): string
+    {
+        if (is_null($this->template)) {
+            throw new \RuntimeException("No template specified");
+        }
+        return $this->template;
+    }
+
+    public function getRenderData(): array
+    {
+        return ["form" => $this];
     }
 
 }

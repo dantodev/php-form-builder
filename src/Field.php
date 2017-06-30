@@ -1,11 +1,12 @@
 <?php namespace Dtkahl\FormBuilder;
 
-class Field
+class Field implements TwigRenderableInterface
 {
 
     protected $name = null;
     protected $value = null;
     protected $label = null;
+    protected $template = null;
 
     public function setName($name)
     {
@@ -43,6 +44,19 @@ class Field
     public function getValue()
     {
         return $this->value;
+    }
+
+    public function getTemplate(): string
+    {
+        if (is_null($this->template)) {
+            throw new \RuntimeException("No template specified");
+        }
+        return $this->template;
+    }
+
+    public function getRenderData(): array
+    {
+        return ["form" => $this];
     }
 
 }
