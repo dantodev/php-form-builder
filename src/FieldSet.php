@@ -285,7 +285,7 @@ abstract class FieldSet implements \ArrayAccess, TwigRenderableInterface
 
     public function getRenderData(): array
     {
-        return ["form" => $this];
+        return ["field_set" => $this];
     }
 
 }
