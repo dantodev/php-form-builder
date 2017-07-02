@@ -5,6 +5,7 @@ use Respect\Validation\Validator;
 
 abstract class FieldSet implements \ArrayAccess, TwigRenderableInterface
 {
+    // TODO Builder/Factory to inject params/dependencies?
     // TODO if Field/FieldSet implement the same interface it could be possible to put them into on Map without pain
     /** @var Map|Field[] */
     protected $fields;
