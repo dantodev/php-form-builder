@@ -306,7 +306,6 @@ abstract class FieldSet implements \ArrayAccess, TwigRenderableInterface
     {
         return array_merge([
             "field_set" => $this,
-            "fields" => $this->fields,
             "name" => $this->name,
             "label" => $this->label,
             "valid" => $this->valid,
