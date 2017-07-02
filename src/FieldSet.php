@@ -19,9 +19,6 @@ abstract class FieldSet implements \ArrayAccess, TwigRenderableInterface
     /** @var Map */
     protected $messages;
 
-    /** @var array */
-    protected $params = [];
-
     /** @var null */
     protected $template = null;
 
@@ -307,7 +304,14 @@ abstract class FieldSet implements \ArrayAccess, TwigRenderableInterface
 
     public function getRenderData(array $data = []): array
     {
-        return array_merge(["field_set" => $this], $data);
+        return array_merge([
+            "field_set" => $this,
+            "fields" => $this->fields,
+            "name" => $this->name,
+            "label" => $this->label,
+            "valid" => $this->valid,
+            "messages" => $this->messages,
+        ], $data);
     }
 
 }

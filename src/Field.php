@@ -140,7 +140,12 @@ class Field implements TwigRenderableInterface
 
     public function getRenderData(array $data = []): array
     {
-        return array_merge(["field" => $this], $data);
-    }
+        return array_merge([
+            "field_set" => $this,
+            "name" => $this->name,
+            "label" => $this->label,
+            "valid" => $this->valid,
+            "messages" => $this->messages,
+        ], $data);    }
 
 }
