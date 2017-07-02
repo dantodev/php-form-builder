@@ -1,16 +1,9 @@
 <?php namespace Dtkahl\FormBuilder;
 
-use Dtkahl\FormBuilder\FieldSet;
 use Twig_Token;
 
 class TwigRenderableExtension extends \Twig_Extension
 {
-    private $twig_environment;
-
-    public function __construct(\Twig_Environment $twig_environment)
-    {
-        $this->twig_environment = $twig_environment;
-    }
 
     public function getName()
     {
