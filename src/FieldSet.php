@@ -5,6 +5,7 @@ use Respect\Validation\Exceptions\NestedValidationException;
 use Respect\Validation\Validator;
 
 // TODO custom messages/translations
+// TODO add label for field sets
 abstract class FieldSet implements \ArrayAccess, TwigRenderableInterface
 {
     /** @var Map|Field[] */
