@@ -1,13 +1,11 @@
 <?php namespace Dtkahl\FormBuilder;
 
 use Dtkahl\ArrayTools\Map;
-use Respect\Validation\Exceptions\NestedValidationException;
 use Respect\Validation\Validator;
 
-// TODO custom messages/translations
-// TODO add label for field sets
 abstract class FieldSet implements \ArrayAccess, TwigRenderableInterface
 {
+    // TODO if Field/FieldSet implement the same interface it could be possible to put them into on Map without pain
     /** @var Map|Field[] */
     protected $fields;
 
@@ -20,18 +18,25 @@ abstract class FieldSet implements \ArrayAccess, TwigRenderableInterface
     /** @var Map */
     protected $messages;
 
-    /** @var array  */
+    /** @var array */
     protected $params = [];
 
     /** @var null */
     protected $template = null;
 
+    /** @var null|string */
+    protected $name = null;
+
+    /** @var string|null */
+    protected $label = null;
+
+    /** @var bool */
+    protected $valid = true;
+
     public function __construct()
     {
         $this->fields = new Map;
         $this->field_sets = new Map;
-        $this->validators = new Map; // TODO move to Field/FieldSet?
-        $this->messages = new Map; // TODO move to Field/FieldSet?
         $this->setUp();
     }
 
@@ -63,15 +68,13 @@ abstract class FieldSet implements \ArrayAccess, TwigRenderableInterface
     protected function removeField(string $name)
     {
         $this->fields->remove($name);
-        $this->messages->remove($name);
-        $this->validators->remove($name);
     }
 
     /**
      * @param $name
      * @return Field
      */
-    public function getField(string $name) // TODO array/dot notation to access sub field set fields
+    public function getField(string $name)
     {
         $field = $this->fields->get($name);
         if ($field instanceof Field) {
@@ -89,6 +92,7 @@ abstract class FieldSet implements \ArrayAccess, TwigRenderableInterface
     {
         $this->removeField($name); // because name must be unique
         $this->field_sets->set($name, $field_set);
+        $field_set->setName($name);
         return $field_set;
     }
 
@@ -98,8 +102,6 @@ abstract class FieldSet implements \ArrayAccess, TwigRenderableInterface
     protected function removeFieldSet(string $name)
     {
         $this->field_sets->remove($name);
-        $this->messages->remove($name);
-        $this->validators->remove($name);
     }
 
     /**
@@ -117,22 +119,38 @@ abstract class FieldSet implements \ArrayAccess, TwigRenderableInterface
 
     /**
      * @param $name
+     * @return $this
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+        return $this;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
      * @param $label
      * @return $this
      */
-    public function setLabel(string $name, string $label)
+    public function setLabel(string $label)
     {
-        $this->getField($name)->setLabel($label);
+        $this->label = $label;
         return $this;
     }
 
   /**
-   * @param string $name
    * @return string
    */
-    public function getLabel(string $name)
+    public function getLabel()
     {
-        return $this->getField($name)->getLabel();
+        return $this->label;
     }
 
     /**
@@ -151,7 +169,7 @@ abstract class FieldSet implements \ArrayAccess, TwigRenderableInterface
      */
     public function setValidator(string $name, Validator $validator)
     {
-        $this->validators->set($name, $validator);
+        $this->getField($name)->setValidator($validator);
         return $this;
     }
 
@@ -161,7 +179,7 @@ abstract class FieldSet implements \ArrayAccess, TwigRenderableInterface
      */
     public function getValidator(string $name)
     {
-        return $this->validators->get($name);
+        return $this->getField($name)->getValidator();
     }
 
     /**
@@ -184,62 +202,64 @@ abstract class FieldSet implements \ArrayAccess, TwigRenderableInterface
     }
 
     /**
+     * @internal
+     */
+    public function initValidation()
+    {
+        foreach ($this->fields as $field) {
+            $field->resetValidation();
+        }
+        foreach ($this->field_sets as $field_set) {
+            $field_set->initValidation();
+            $this->setUpValidators();
+        }
+        $this->setUpValidators();
+    }
+
+    /**
+     * @return bool
+     */
+    public function validate()
+    {
+        $this->initValidation();
+
+        $invalid_fields = $this->fields->copy()->filter(function (string $name, Field $field) {
+            return !$field->validate();
+        });
+        $invalid_field_sets = $this->field_sets->copy()->filter(function (string $name, FieldSet $field_set) {
+            return !$field_set->validate();
+        });
+        $this->valid = $invalid_fields->count() == 0 && $invalid_field_sets->count() == 0;
+        return $this->valid;
+    }
+
+    /**
      * @return bool
      */
     public function isValid()
     {
-        // (re)initialize validators, allow conditions based on values
-        // reset messages
-        $this->validators = new Map;
-        $this->messages = new Map;
-        $this->setUpValidators();
-
-        $invalid_fields = $this->fields->copy()->filter(function (string $name, Field $field) {
-            $validator = $this->validators->get($name);
-            if ($validator instanceof Validator) {
-                $validator->setName($this->getLabel($name) ?: $name);
-                try {
-                    $validator->assert($field->getValue());
-                } catch (NestedValidationException $e) {
-                    $e->setParams($this->params); // TODO doc
-                    $this->messages->set($name, $e->getMessages());
-                    return true;
-                }
-            }
-            return false;
-        });
-        $invalid_field_sets = $this->field_sets->copy()->filter(function (string $name, FieldSet $field_set) {
-            if (!$field_set->isValid()) {
-                $this->messages->set($name, $field_set->getMessages());
-                return true;
-            }
-            return false;
-        });
-        return $invalid_fields->count() == 0 && $invalid_field_sets->count() == 0;
+        return $this->valid;
     }
 
     /**
-     * @param $name
      * @return array
      */
-    public function getMessages(string $name = null)
+    public function getMessages()
     {
-        if (is_null($name)) {
-            return $this->messages->toArray();
+        $messages = [];
+        foreach ($this->fields->toArray() as $name=>$field) {
+            /** @var Field $field */
+             if (!$field->isValid()) {
+                 $messages[$name] = $field->getMessages();
+             }
         }
-        return $this->messages->get($name, []);
-    }
-
-    /**
-     * @param string|null $name
-     * @return bool
-     */
-    public function hasMessages(string $name = null)
-    {
-        if (is_null($name)) {
-            return !$this->messages->isEmpty();
+        foreach ($this->field_sets->toArray() as $name=>$field_set) {
+            /** @var FieldSet $field_set */
+            if (!$field_set->isValid()) {
+                $messages[$name] = $field_set->getMessages();
+            }
         }
-        return $this->messages->has($name);
+        return $messages;
     }
 
     public function offsetGet($offset)
@@ -284,9 +304,9 @@ abstract class FieldSet implements \ArrayAccess, TwigRenderableInterface
         return $this->template;
     }
 
-    public function getRenderData(): array
+    public function getRenderData(array $data = []): array
     {
-        return ["field_set" => $this];
+        return array_merge(["field_set" => $this], $data);
     }
 
 }
