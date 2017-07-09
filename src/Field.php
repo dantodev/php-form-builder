@@ -80,10 +80,14 @@ class Field implements TwigRenderableInterface
     }
 
     /**
+     * @param bool $with_path
      * @return null|string
      */
-    public function getName() : string
+    public function getName(bool $with_path = false) : string
     {
+        if (!$with_path) {
+            return $this->name;
+        }
         $parent = $this->getParent();
         $trace = [$this->name];
         while ($parent instanceof FieldSet) {
@@ -207,7 +211,7 @@ class Field implements TwigRenderableInterface
     {
         return array_merge([
             "field" => $this,
-            "name" => $this->name,
+            "name" => $this->getName(true),
             "label" => $this->label,
             "value" => $this->value,
             "valid" => $this->valid,
