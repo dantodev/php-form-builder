@@ -86,12 +86,12 @@ abstract class FieldSet implements \ArrayAccess, TwigRenderableInterface
     public function setValidationParams(array $params) : self
     {
         $this->validation_params = $params;
-        foreach ($this->fields as $field) {
+        $this->fields->each(function (string $name, Field $field) use ($params) {
             $field->setValidationParams($params);
-        }
-        foreach ($this->field_sets as $field_set) {
+        });
+        $this->field_sets->each(function (string $name, FieldSet $field_set) use ($params) {
             $field_set->setValidationParams($params);
-        }
+        });
         return $this;
     }
 
@@ -260,13 +260,13 @@ abstract class FieldSet implements \ArrayAccess, TwigRenderableInterface
      */
     public function initValidation() : void
     {
-        foreach ($this->fields as $field) {
+        $this->fields->each(function (string $name, Field $field) {
             $field->resetValidation();
-        }
-        foreach ($this->field_sets as $field_set) {
+        });
+        $this->field_sets->each(function (string $name, FieldSet $field_set) {
             $field_set->initValidation();
             $this->setUpValidators();
-        }
+        });
         $this->setUpValidators();
     }
 
