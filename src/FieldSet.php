@@ -86,6 +86,12 @@ abstract class FieldSet implements \ArrayAccess, TwigRenderableInterface
     public function setValidationParams(array $params) : self
     {
         $this->validation_params = $params;
+        foreach ($this->fields as $field) {
+            $field->setValidationParams($params);
+        }
+        foreach ($this->field_sets as $field_set) {
+            $field_set->setValidationParams($params);
+        }
         return $this;
     }
 
