@@ -184,6 +184,9 @@ class Field implements TwigRenderableInterface
                 $this->validator->assert($this->getValue());
             } catch (NestedValidationException $e) {
                 $e->setParams($this->validation_params);
+                foreach ($e->getIterator() as $e2) {
+                    $e2->setParams($this->validation_params);
+                }
                 $this->messages = $e->getMessages();
                 $this->valid = false;
             }
