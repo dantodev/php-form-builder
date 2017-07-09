@@ -158,6 +158,7 @@ class Field implements TwigRenderableInterface
             "value" => $this->value,
             "valid" => $this->valid,
             "messages" => $this->messages,
-        ], $data);    }
+        ], $data);
+    }
 
 }
