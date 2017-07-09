@@ -13,6 +13,17 @@ class Field implements TwigRenderableInterface
     protected $validator = null;
     protected $messages = [];
     protected $valid = true;
+    protected $validation_params = [];
+
+    /**
+     * @param $params
+     * @return $this
+     */
+    public function setValidationParams($params)
+    {
+        $this->validation_params = $params;
+        return $this;
+    }
 
     /**
      * @param $name
@@ -114,7 +125,7 @@ class Field implements TwigRenderableInterface
             try {
                 $this->validator->assert($this->getValue());
             } catch (NestedValidationException $e) {
-//                $e->setParams($this->params); // TODO
+                $e->setParams($this->validation_params);
                 $this->messages = $e->getMessages();
                 $this->valid = false;
             }

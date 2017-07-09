@@ -31,6 +31,9 @@ abstract class FieldSet implements \ArrayAccess, TwigRenderableInterface
     /** @var bool */
     protected $valid = true;
 
+    /** @var array */
+    protected $validation_params = [];
+
     public function __construct()
     {
         $this->fields = new Map;
@@ -48,6 +51,16 @@ abstract class FieldSet implements \ArrayAccess, TwigRenderableInterface
     abstract public function setUpValidators();
 
     /**
+     * @param $params
+     * @return $this
+     */
+    public function setValidationParams($params)
+    {
+        $this->validation_params = $params;
+        return $this;
+    }
+
+    /**
      * @param string $name
      * @param Field $field
      * @return Field
@@ -57,6 +70,7 @@ abstract class FieldSet implements \ArrayAccess, TwigRenderableInterface
         $this->removeFieldSet($name); // because name must be unique
         $this->fields->set($name, $field);
         $field->setName($name);
+        $field->setValidationParams($this->validation_params);
         return $field;
     }
 
@@ -91,6 +105,7 @@ abstract class FieldSet implements \ArrayAccess, TwigRenderableInterface
         $this->removeField($name); // because name must be unique
         $this->field_sets->set($name, $field_set);
         $field_set->setName($name);
+        $field_set->setValidationParams($this->validation_params);
         return $field_set;
     }
 
