@@ -5,8 +5,11 @@ use Respect\Validation\Validator;
 
 abstract class FieldSet implements \ArrayAccess, TwigRenderableInterface
 {
-    // TODO Builder/Factory to inject params/dependencies?
     // TODO if Field/FieldSet implement the same interface it could be possible to put them into on Map without pain
+
+    /** @var null|FieldSet */
+    protected $parent;
+
     /** @var Map|Field[] */
     protected $fields;
 
@@ -23,10 +26,10 @@ abstract class FieldSet implements \ArrayAccess, TwigRenderableInterface
     protected $template = null;
 
     /** @var null|string */
-    protected $name = null;
+    protected $name = '';
 
     /** @var string|null */
-    protected $label = null;
+    protected $label = '';
 
     /** @var bool */
     protected $valid = true;
@@ -51,10 +54,36 @@ abstract class FieldSet implements \ArrayAccess, TwigRenderableInterface
     abstract public function setUpValidators();
 
     /**
-     * @param $params
-     * @return $this
+     * @param FieldSet|null $field_set
+     * @return $this|self
      */
-    public function setValidationParams($params)
+    public function setParent(?FieldSet $field_set) : self
+    {
+        $this->parent = $field_set;
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasParent() : bool
+    {
+        return !is_null($this->parent);
+    }
+
+    /**
+     * @return FieldSet|null
+     */
+    public function getParent() : ?FieldSet
+    {
+        return $this->parent;
+    }
+
+    /**
+     * @param $params
+     * @return $this|self
+     */
+    public function setValidationParams(array $params) : self
     {
         $this->validation_params = $params;
         return $this;
@@ -65,28 +94,31 @@ abstract class FieldSet implements \ArrayAccess, TwigRenderableInterface
      * @param Field $field
      * @return Field
      */
-    protected function setField(string $name, Field $field)
+    protected function setField(string $name, Field $field) : FIeld
     {
         $this->removeFieldSet($name); // because name must be unique
         $this->fields->set($name, $field);
         $field->setName($name);
+        $field->setParent($this);
         $field->setValidationParams($this->validation_params);
         return $field;
     }
 
     /**
      * @param string $name
+     * @return $this|self
      */
-    protected function removeField(string $name)
+    protected function removeField(string $name) : self
     {
         $this->fields->remove($name);
+        return $this;
     }
 
     /**
      * @param $name
      * @return Field
      */
-    public function getField(string $name)
+    public function getField(string $name) : Field
     {
         $field = $this->fields->get($name);
         if ($field instanceof Field) {
@@ -100,28 +132,31 @@ abstract class FieldSet implements \ArrayAccess, TwigRenderableInterface
      * @param FieldSet $field_set
      * @return FieldSet
      */
-    public function setFieldSet(string $name, FieldSet $field_set)
+    public function setFieldSet(string $name, FieldSet $field_set) : FieldSet
     {
         $this->removeField($name); // because name must be unique
         $this->field_sets->set($name, $field_set);
         $field_set->setName($name);
+        $field_set->setParent($this);
         $field_set->setValidationParams($this->validation_params);
         return $field_set;
     }
 
     /**
      * @param string $name
+     * @return $this|self
      */
-    protected function removeFieldSet(string $name)
+    protected function removeFieldSet(string $name) : self
     {
         $this->field_sets->remove($name);
+        return $this;
     }
 
     /**
      * @param string $name
      * @return FieldSet
      */
-    public function getFieldSet(string $name)
+    public function getFieldSet(string $name) : FieldSet
     {
         $field_set = $this->field_sets->get($name);
         if ($field_set instanceof FieldSet) {
@@ -132,9 +167,9 @@ abstract class FieldSet implements \ArrayAccess, TwigRenderableInterface
 
     /**
      * @param $name
-     * @return $this
+     * @return $this|self
      */
-    public function setName($name)
+    public function setName(string $name) : self
     {
         $this->name = $name;
         return $this;
@@ -143,16 +178,16 @@ abstract class FieldSet implements \ArrayAccess, TwigRenderableInterface
     /**
      * @return null|string
      */
-    public function getName()
+    public function getName() : string
     {
         return $this->name;
     }
 
     /**
      * @param $label
-     * @return $this
+     * @return $this|self
      */
-    public function setLabel(string $label)
+    public function setLabel(string $label) : self
     {
         $this->label = $label;
         return $this;
@@ -161,14 +196,14 @@ abstract class FieldSet implements \ArrayAccess, TwigRenderableInterface
   /**
    * @return string
    */
-    public function getLabel()
+    public function getLabel() : string
     {
         return $this->label;
     }
 
     /**
      * @param string $name
-     * @return mixed|null
+     * @return mixed
      */
     public function getValue(string $name)
     {
@@ -178,9 +213,9 @@ abstract class FieldSet implements \ArrayAccess, TwigRenderableInterface
     /**
      * @param $name
      * @param Validator $validator
-     * @return $this
+     * @return self|$this
      */
-    public function setValidator(string $name, Validator $validator)
+    public function setValidator(string $name, ?Validator $validator) : self
     {
         $this->getField($name)->setValidator($validator);
         return $this;
@@ -190,16 +225,16 @@ abstract class FieldSet implements \ArrayAccess, TwigRenderableInterface
      * @param $name
      * @return Validator
      */
-    public function getValidator(string $name)
+    public function getValidator(string $name) : ?Validator
     {
         return $this->getField($name)->getValidator();
     }
 
     /**
      * @param array $data
-     * @return mixed|void
+     * @return void
      */
-    public function hydrate(array $data)
+    public function hydrate(array $data) : void
     {
         foreach ($data as $name=>$field_data) {
             $field = $this->fields->get($name);
@@ -217,7 +252,7 @@ abstract class FieldSet implements \ArrayAccess, TwigRenderableInterface
     /**
      * @internal
      */
-    public function initValidation()
+    public function initValidation() : void
     {
         foreach ($this->fields as $field) {
             $field->resetValidation();
@@ -232,7 +267,7 @@ abstract class FieldSet implements \ArrayAccess, TwigRenderableInterface
     /**
      * @return bool
      */
-    public function validate()
+    public function validate() : bool
     {
         $this->initValidation();
 
@@ -249,7 +284,7 @@ abstract class FieldSet implements \ArrayAccess, TwigRenderableInterface
     /**
      * @return bool
      */
-    public function isValid()
+    public function isValid() : bool
     {
         return $this->valid;
     }
@@ -257,7 +292,7 @@ abstract class FieldSet implements \ArrayAccess, TwigRenderableInterface
     /**
      * @return array
      */
-    public function getMessages()
+    public function getMessages() : array
     {
         $messages = [];
         foreach ($this->fields->toArray() as $name=>$field) {
@@ -309,7 +344,7 @@ abstract class FieldSet implements \ArrayAccess, TwigRenderableInterface
             $offset);
     }
 
-    public function getTemplate(): string
+    public function getTemplate() : string
     {
         if (is_null($this->template)) {
             throw new \RuntimeException("No template specified");
@@ -317,7 +352,7 @@ abstract class FieldSet implements \ArrayAccess, TwigRenderableInterface
         return $this->template;
     }
 
-    public function getRenderData(array $data = []): array
+    public function getRenderData(array $data = []) : array
     {
         return array_merge([
             "field_set" => $this,

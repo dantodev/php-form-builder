@@ -49,9 +49,11 @@ class FormBuilderTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($this->form->isValid());
         $this->assertEquals(["email", "name"], array_keys($this->form->getMessages()));
         $this->form->getField('email')->setValue(12);
+        $this->assertEquals('email', $this->form->getField('email')->getName());
         $this->assertFalse($this->form->getFieldSet('name')->getField('first_name')->isValid());
         $this->assertFalse($this->form->getFieldSet('name')->getField('last_name')->isValid());
-        $this->form->getFieldSet('name')->getField('first_name')->setValue('John');
+        $this->assertEquals('name[first_name]', $this->form->getFieldSet('name')->getField('first_name')->getName());
+        $this->form->hydrate(["name" => ["first_name" => "John"]]);
         $this->form->getFieldSet('name')->getField('last_name')->setValue('Smith');
         $this->assertFalse($this->form->validate());
         $this->assertTrue($this->form->getFieldSet('name')->getField('first_name')->isValid());

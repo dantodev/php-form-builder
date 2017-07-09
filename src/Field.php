@@ -6,30 +6,74 @@ use Respect\Validation\Validator;
 class Field implements TwigRenderableInterface
 {
 
-    protected $name = null;
+    /** @var null|FieldSet */
+    protected $parent;
+
+    /** @var string */
+    protected $name = '';
+
+    /** @var null */
     protected $value = null;
-    protected $label = null;
+
+    /** @var string */
+    protected $label = '';
+
+    /** @var null */
     protected $template = null;
+
+    /** @var null|Validator */
     protected $validator = null;
+
+    /** @var array */
     protected $messages = [];
+
+    /** @var bool */
     protected $valid = true;
+
+    /** @var array */
     protected $validation_params = [];
 
     /**
      * @param $params
-     * @return $this
+     * @return $this|self
      */
-    public function setValidationParams($params)
+    public function setValidationParams(array $params) : self
     {
         $this->validation_params = $params;
         return $this;
     }
 
     /**
-     * @param $name
-     * @return $this
+     * @param FieldSet|null $field_set
+     * @return $this|self
      */
-    public function setName($name)
+    public function setParent(?FieldSet $field_set) : self
+    {
+        $this->parent = $field_set;
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasParent() : bool
+    {
+        return !is_null($this->parent);
+    }
+
+    /**
+     * @return FieldSet|null
+     */
+    public function getParent() : ?FieldSet
+    {
+        return $this->parent;
+    }
+
+    /**
+     * @param $name
+     * @return $this|self
+     */
+    public function setName(string $name) : self
     {
         $this->name = $name;
         return $this;
@@ -38,32 +82,42 @@ class Field implements TwigRenderableInterface
     /**
      * @return null|string
      */
-    public function getName()
+    public function getName() : string
     {
-        return $this->name;
+        $parent = $this->getParent();
+        $trace = [$this->name];
+        while ($parent instanceof FieldSet) {
+            if ($parent->hasParent()) {
+                array_unshift($trace, $parent->getName());
+            }
+            $parent = $parent->getParent();
+        }
+        return array_shift($trace) . join('', array_map(function ($name) {return "[$name]";}, $trace));
     }
 
     /**
      * @param $label
+     * @return $this|self
      */
-    public function setLabel($label)
+    public function setLabel(string $label) : Field
     {
         $this->label = $label;
+        return $this;
     }
 
     /**
-     * @return null
+     * @return string
      */
-    public function getLabel()
+    public function getLabel() : string
     {
         return $this->label;
     }
 
     /**
      * @param mixed $value
-     * @return $this
+     * @return $this|self
      */
-    public function setValue($value)
+    public function setValue($value) : self
     {
         $this->value = $value;
         return $this;
@@ -78,9 +132,9 @@ class Field implements TwigRenderableInterface
     }
 
     /**
-     * @return $this
+     * @return $this|self
      */
-    public function resetValidation()
+    public function resetValidation() : self
     {
         $this->messages = [];
         $this->validator = null;
@@ -90,9 +144,9 @@ class Field implements TwigRenderableInterface
 
     /**
      * @param Validator $validator
-     * @return $this
+     * @return $this|self
      */
-    public function setValidator(Validator $validator)
+    public function setValidator(Validator $validator) : self
     {
         $this->validator = $validator;
         return $this;
@@ -101,7 +155,7 @@ class Field implements TwigRenderableInterface
     /**
      * @return null|Validator
      */
-    public function getValidator()
+    public function getValidator() : ?Validator
     {
         return $this->validator;
     }
@@ -109,7 +163,7 @@ class Field implements TwigRenderableInterface
     /**
      * @return array
      */
-    public function getMessages()
+    public function getMessages() : array
     {
         return $this->messages;
     }
@@ -117,7 +171,7 @@ class Field implements TwigRenderableInterface
     /**
      * @return bool
      */
-    public function validate()
+    public function validate() : bool
     {
         $this->valid = true;
         if ($this->validator instanceof Validator) {
@@ -136,12 +190,12 @@ class Field implements TwigRenderableInterface
     /**
      * @return bool
      */
-    public function isValid()
+    public function isValid() : bool
     {
         return $this->valid;
     }
 
-    public function getTemplate(): string
+    public function getTemplate() : string
     {
         if (is_null($this->template)) {
             throw new \RuntimeException("No template specified");
@@ -149,7 +203,7 @@ class Field implements TwigRenderableInterface
         return $this->template;
     }
 
-    public function getRenderData(array $data = []): array
+    public function getRenderData(array $data = []) : array
     {
         return array_merge([
             "field" => $this,
