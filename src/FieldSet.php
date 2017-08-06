@@ -259,8 +259,9 @@ abstract class FieldSet implements \ArrayAccess, TwigRenderableInterface
      * @param array $data
      * @return void
      */
-    public function hydrate(array $data) : void
+    public function hydrate(?array $data) : void
     {
+        $data = (array) $data;
         foreach ($data as $name=>$field_data) {
             $field = $this->fields->get($name);
             if ($field instanceof Field) {
