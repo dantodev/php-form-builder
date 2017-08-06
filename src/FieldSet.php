@@ -217,6 +217,25 @@ abstract class FieldSet implements \ArrayAccess, TwigRenderableInterface
     }
 
     /**
+     * @return array
+     */
+    public function getValues() : array
+    {
+        $values = [];
+
+        foreach ($this->fields->toArray() as $name=>$field) {
+            /** @var Field $field */
+            $values[$name] = $field->getValue();
+        }
+        foreach ($this->field_sets->toArray() as $name=>$field_set) {
+            /** @var FieldSet $field_set */
+            $values[$name] = $field_set->getValues();
+        }
+
+        return $values;
+    }
+
+    /**
      * @param $name
      * @param Validator $validator
      * @return self|$this
