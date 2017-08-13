@@ -100,8 +100,11 @@ abstract class FieldSet implements \ArrayAccess, TwigRenderableInterface
      * @param Field $field
      * @return Field
      */
-    protected function setField(string $name, Field $field) : FIeld
+    protected function setField(string $name, ?Field $field = null) : FIeld
     {
+        if ($field === null) {
+            $field = new Field;
+        }
         $this->removeFieldSet($name); // because name must be unique
         $this->fields->set($name, $field);
         $field->setName($name);

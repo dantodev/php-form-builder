@@ -17,7 +17,7 @@ class FormBuilderTest extends \PHPUnit_Framework_TestCase
         $sub_form = new class extends FieldSet {
             public function setUp() {
                 $this->setField('first_name', new Field);
-                $this->setField('last_name', new Field);
+                $this->setField('last_name');
             }
             public function setUpValidators() {
                 $this->setValidator('first_name', Validator::stringType());
