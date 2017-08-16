@@ -13,8 +13,8 @@ abstract class FieldSet implements \ArrayAccess, TwigRenderableInterface
     /** @var Map|Field[] */
     protected $fields;
 
-    /** @var  Map|FieldSet[] */
-    protected $field_sets;
+    /** @var  Map|FieldSet[]|Field[] */
+    protected $children;
 
     /** @var Validator[] */
     protected $validators;
@@ -39,8 +39,7 @@ abstract class FieldSet implements \ArrayAccess, TwigRenderableInterface
 
     public function __construct()
     {
-        $this->fields = new Map;
-        $this->field_sets = new Map;
+        $this->children = new Map;
         $this->setUp();
     }
 
@@ -86,92 +85,54 @@ abstract class FieldSet implements \ArrayAccess, TwigRenderableInterface
     public function setValidationParams(array $params) : self
     {
         $this->validation_params = $params;
-        $this->fields->each(function (string $name, Field $field) use ($params) {
-            $field->setValidationParams($params);
-        });
-        $this->field_sets->each(function (string $name, FieldSet $field_set) use ($params) {
-            $field_set->setValidationParams($params);
+        $this->children->each(function (string $name, $child) use ($params) {
+          /** @var Field|FieldSet $child */
+          $child->setValidationParams($params);
         });
         return $this;
     }
 
     /**
      * @param string $name
-     * @param Field $field
-     * @return Field
+     * @param Field|FieldSet $child
+     * @return Field|FieldSet
      */
-    protected function setField(string $name, ?Field $field = null) : FIeld
+    protected function set(string $name, $child = null)
     {
-        if ($field === null) {
-            $field = new Field;
+        if ($child === null) {
+          $child = new Field;
         }
-        $this->removeFieldSet($name); // because name must be unique
-        $this->fields->set($name, $field);
-        $field->setName($name);
-        $field->setParent($this);
-        $field->setValidationParams($this->validation_params);
-        return $field;
+        if (!$child instanceof Field && !$child instanceof FieldSet) {
+          throw new \InvalidArgumentException("FormSet child must be null or instance of Field or FieldSet.");
+        }
+        $this->children->set($name, $child);
+        $child->setName($name);
+        $child->setParent($this);
+        $child->setValidationParams($this->validation_params);
+        return $child;
     }
 
     /**
      * @param string $name
      * @return $this|self
      */
-    protected function removeField(string $name) : self
+    protected function remove(string $name) : self
     {
-        $this->fields->remove($name);
+        $this->children->remove($name);
         return $this;
     }
 
     /**
      * @param $name
-     * @return Field
+     * @return Field|FieldSet
      */
-    public function getField(string $name) : Field
+    public function get(string $name)
     {
-        $field = $this->fields->get($name);
-        if ($field instanceof Field) {
+        $field = $this->children->get($name);
+        if ($field !== null) {
             return $field;
         }
         throw new \RuntimeException("Unknown field '$name'.");
-    }
-
-    /**
-     * @param $name
-     * @param FieldSet $field_set
-     * @return FieldSet
-     */
-    public function setFieldSet(string $name, FieldSet $field_set) : FieldSet
-    {
-        $this->removeField($name); // because name must be unique
-        $this->field_sets->set($name, $field_set);
-        $field_set->setName($name);
-        $field_set->setParent($this);
-        $field_set->setValidationParams($this->validation_params);
-        return $field_set;
-    }
-
-    /**
-     * @param string $name
-     * @return $this|self
-     */
-    protected function removeFieldSet(string $name) : self
-    {
-        $this->field_sets->remove($name);
-        return $this;
-    }
-
-    /**
-     * @param string $name
-     * @return FieldSet
-     */
-    public function getFieldSet(string $name) : FieldSet
-    {
-        $field_set = $this->field_sets->get($name);
-        if ($field_set instanceof FieldSet) {
-            return $field_set;
-        }
-        throw new \RuntimeException("Unknown field set '$name'.");
     }
 
     /**
@@ -211,31 +172,18 @@ abstract class FieldSet implements \ArrayAccess, TwigRenderableInterface
     }
 
     /**
-     * @param string $name
+     * @param string|null $name
      * @return mixed
      */
-    public function getValue(string $name)
+    public function getValue(?string $name = null)
     {
-        return $this->getField($name)->getValue();
-    }
-
-    /**
-     * @return array
-     */
-    public function getValues() : array
-    {
-        $values = [];
-
-        foreach ($this->fields->toArray() as $name=>$field) {
-            /** @var Field $field */
-            $values[$name] = $field->getValue();
+        if ($name === null) {
+            return $this->children->map(function ($name, $child) {
+                /** @var Field|FieldSet $child */
+                return $child->getValue();
+            })->toArray();
         }
-        foreach ($this->field_sets->toArray() as $name=>$field_set) {
-            /** @var FieldSet $field_set */
-            $values[$name] = $field_set->getValues();
-        }
-
-        return $values;
+        return $this->get($name)->getValue();
     }
 
     /**
@@ -245,7 +193,10 @@ abstract class FieldSet implements \ArrayAccess, TwigRenderableInterface
      */
     public function setValidator(string $name, ?Validator $validator) : self
     {
-        $this->getField($name)->setValidator($validator);
+        $child = $this->get($name);
+        if ($child instanceof Field) {
+            $child->setValidator($validator);
+        }
         return $this;
     }
 
@@ -255,7 +206,11 @@ abstract class FieldSet implements \ArrayAccess, TwigRenderableInterface
      */
     public function getValidator(string $name) : ?Validator
     {
-        return $this->getField($name)->getValidator();
+        $child = $this->get($name);
+        if ($child instanceof Field) {
+            $child->getValidator();
+        }
+        return null;
     }
 
     /**
@@ -266,14 +221,11 @@ abstract class FieldSet implements \ArrayAccess, TwigRenderableInterface
     {
         $data = (array) $data;
         foreach ($data as $name=>$field_data) {
-            $field = $this->fields->get($name);
-            if ($field instanceof Field) {
-                $field->setValue($field_data);
-                continue;
-            }
-            $field_set = $this->field_sets->get($name);
-            if ($field_set instanceof FieldSet) {
-                $field_set->hydrate($field_data);
+            $child = $this->get($name);
+            if ($child instanceof Field) {
+                $child->setValue($field_data);
+            } elseif ($child instanceof FieldSet) {
+                $child->hydrate($field_data);
             }
         }
     }
@@ -283,12 +235,12 @@ abstract class FieldSet implements \ArrayAccess, TwigRenderableInterface
      */
     public function initValidation() : void
     {
-        $this->fields->each(function (string $name, Field $field) {
-            $field->resetValidation();
-        });
-        $this->field_sets->each(function (string $name, FieldSet $field_set) {
-            $field_set->initValidation();
-            $this->setUpValidators();
+        $this->children->each(function (string $name, $child) {
+            if ($child instanceof Field) {
+                $child->resetValidation();
+            } elseif ($child instanceof FieldSet) {
+                $child->initValidation();
+            }
         });
         $this->setUpValidators();
     }
@@ -300,13 +252,11 @@ abstract class FieldSet implements \ArrayAccess, TwigRenderableInterface
     {
         $this->initValidation();
 
-        $invalid_fields = $this->fields->copy()->filter(function (string $name, Field $field) {
-            return !$field->validate();
+        $invalid_children = $this->children->copy()->filter(function (string $name, $child) {
+            /** @var Field|FieldSet $child */
+            return !$child->validate();
         });
-        $invalid_field_sets = $this->field_sets->copy()->filter(function (string $name, FieldSet $field_set) {
-            return !$field_set->validate();
-        });
-        $this->valid = $invalid_fields->count() == 0 && $invalid_field_sets->count() == 0;
+        $this->valid = $invalid_children->count() == 0;
         return $this->valid;
     }
 
@@ -324,53 +274,36 @@ abstract class FieldSet implements \ArrayAccess, TwigRenderableInterface
     public function getMessages() : array
     {
         $messages = [];
-        foreach ($this->fields->toArray() as $name=>$field) {
-            /** @var Field $field */
-             if (!$field->isValid()) {
-                 $messages[$name] = $field->getMessages();
+        foreach ($this->children->toArray() as $name=>$child) {
+            /** @var Field|FieldSet $child */
+             if (!$child->isValid()) {
+                 $messages[$name] = $child->getMessages();
              }
-        }
-        foreach ($this->field_sets->toArray() as $name=>$field_set) {
-            /** @var FieldSet $field_set */
-            if (!$field_set->isValid()) {
-                $messages[$name] = $field_set->getMessages();
-            }
         }
         return $messages;
     }
 
     public function offsetGet($offset)
     {
-        if ($this->fields->has($offset)) {
-            return $this->fields->get($offset);
-        } elseif ($this->field_sets->has($offset)) {
-            return $this->field_sets->get($offset);
-        } else {
-            return null;
+        if ($this->children->has($offset)) {
+            return $this->children->get($offset);
         }
+        return null;
     }
 
     public function offsetSet($offset, $value)
     {
-        if ($value instanceof Field) {
-            $this->setField($offset, $value);
-        } elseif ($value instanceof FieldSet) {
-            $this->setFieldSet($offset, $value);
-        } else {
-            throw new \InvalidArgumentException("The Value must be an instance of Field or FieldSet");
-        }
+        $this->set($offset, $value);
     }
 
     public function offsetExists($offset)
     {
-        return $this->fields->has($offset) || $this->field_sets->has($offset);
+        return $this->children->has($offset);
     }
 
     public function offsetUnset($offset)
     {
-        $this->removeField($offset);
-        $this->removeFieldSet(
-            $offset);
+        $this->remove($offset);
     }
 
     public function getTemplate() : string

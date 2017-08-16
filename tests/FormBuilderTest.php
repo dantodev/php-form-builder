@@ -16,8 +16,8 @@ class FormBuilderTest extends TestCase
     {
         $sub_form = new class extends FieldSet {
             public function setUp() {
-                $this->setField('first_name', new Field);
-                $this->setField('last_name');
+                $this->set('first_name', new Field);
+                $this->set('last_name');
             }
             public function setUpValidators() {
                 $this->setValidator('first_name', Validator::stringType());
@@ -32,9 +32,9 @@ class FormBuilderTest extends TestCase
                 parent::__construct();
             }
             public function setUp() {
-                $this->setFieldSet('name', $this->sub_form);
-                $this->setField('email', new Field);
-                $this->setField('age', new Field);
+                $this->set('name', $this->sub_form);
+                $this->set('email', new Field);
+                $this->set('age', new Field);
             }
             public function setUpValidators() {
                 $this->setValidator('email', Validator::email());
@@ -47,21 +47,21 @@ class FormBuilderTest extends TestCase
         $this->assertTrue($this->form->isValid());
         $this->assertFalse($this->form->validate());
         $this->assertFalse($this->form->isValid());
-        $this->assertEquals(["email", "name"], array_keys($this->form->getMessages()));
-        $this->form->getField('email')->setValue(12);
-        $this->assertEquals('email', $this->form->getField('email')->getName());
-        $this->assertEquals('email', $this->form->getField('email')->getName(true));
-        $this->assertFalse($this->form->getFieldSet('name')->getField('first_name')->isValid());
-        $this->assertFalse($this->form->getFieldSet('name')->getField('last_name')->isValid());
-        $this->assertEquals('first_name', $this->form->getFieldSet('name')->getField('first_name')->getName());
-        $this->assertEquals('name[first_name]', $this->form->getFieldSet('name')->getField('first_name')->getName(true));
+        $this->assertEquals(["name", "email"], array_keys($this->form->getMessages()));
+        $this->form->get('email')->setValue(12);
+        $this->assertEquals('email', $this->form->get('email')->getName());
+        $this->assertEquals('email', $this->form->get('email')->getName(true));
+        $this->assertFalse($this->form->get('name')->get('first_name')->isValid());
+        $this->assertFalse($this->form->get('name')->get('last_name')->isValid());
+        $this->assertEquals('first_name', $this->form->get('name')->get('first_name')->getName());
+        $this->assertEquals('name[first_name]', $this->form->get('name')->get('first_name')->getName(true));
         $this->form->hydrate(["name" => ["first_name" => "John"]]);
-        $this->form->getFieldSet('name')->getField('last_name')->setValue('Smith');
+        $this->form->get('name')->get('last_name')->setValue('Smith');
         $this->assertFalse($this->form->validate());
-        $this->assertTrue($this->form->getFieldSet('name')->getField('first_name')->isValid());
-        $this->assertTrue($this->form->getFieldSet('name')->getField('last_name')->isValid());
+        $this->assertTrue($this->form->get('name')->get('first_name')->isValid());
+        $this->assertTrue($this->form->get('name')->get('last_name')->isValid());
         $this->assertEquals(["email"], array_keys($this->form->getMessages()));
-        $this->form->getField('email')->setValue('john.smith@tardis.space');
+        $this->form->get('email')->setValue('john.smith@tardis.space');
         $this->assertTrue($this->form->validate());
         $this->assertEmpty(array_keys($this->form->getMessages()));
     }
@@ -76,8 +76,8 @@ class FormBuilderTest extends TestCase
         $this->form->hydrate($values);
         $this->assertEquals('john.smith@tardis.space', $this->form->getValue('email'));
         $this->assertEquals(42, $this->form->getValue('age'));
-        $this->assertEquals('John', $this->form->getFieldSet('name')->getValue('first_name'));
-        $this->assertEquals($values, $this->form->getValues());
+        $this->assertEquals('John', $this->form->get('name')->getValue('first_name'));
+        $this->assertEquals($values, $this->form->getValue());
     }
 
     public function testArrayAccess()
