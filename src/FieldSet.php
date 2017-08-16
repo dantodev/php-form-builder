@@ -3,9 +3,8 @@
 use Dtkahl\ArrayTools\Map;
 use Respect\Validation\Validator;
 
-abstract class FieldSet implements \ArrayAccess, TwigRenderableInterface
+abstract class FieldSet implements \ArrayAccess
 {
-    // TODO if Field/FieldSet implement the same interface it could be possible to put them into on Map without pain
 
     /** @var null|FieldSet */
     protected $parent;
@@ -304,25 +303,6 @@ abstract class FieldSet implements \ArrayAccess, TwigRenderableInterface
     public function offsetUnset($offset)
     {
         $this->remove($offset);
-    }
-
-    public function getTemplate() : string
-    {
-        if (is_null($this->template)) {
-            throw new \RuntimeException("No template specified");
-        }
-        return $this->template;
-    }
-
-    public function getRenderData(array $data = []) : array
-    {
-        return array_merge([
-            "field_set" => $this,
-            "name" => $this->name,
-            "label" => $this->label,
-            "valid" => $this->valid,
-            "messages" => $this->messages,
-        ], $data);
     }
 
 }

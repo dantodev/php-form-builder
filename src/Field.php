@@ -3,7 +3,7 @@
 use Respect\Validation\Exceptions\NestedValidationException;
 use Respect\Validation\Validator;
 
-class Field implements TwigRenderableInterface
+class Field
 {
 
     /** @var null|FieldSet */
@@ -200,26 +200,6 @@ class Field implements TwigRenderableInterface
     public function isValid() : bool
     {
         return $this->valid;
-    }
-
-    public function getTemplate() : string
-    {
-        if (is_null($this->template)) {
-            throw new \RuntimeException("No template specified");
-        }
-        return $this->template;
-    }
-
-    public function getRenderData(array $data = []) : array
-    {
-        return array_merge([
-            "field" => $this,
-            "name" => $this->getName(true),
-            "label" => $this->label,
-            "value" => $this->value,
-            "valid" => $this->valid,
-            "messages" => $this->messages,
-        ], $data);
     }
 
 }
