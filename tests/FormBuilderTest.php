@@ -1,11 +1,11 @@
 <?php namespace Dtkahl\FormBuilderTest;
 
+use PHPUnit\Framework\TestCase;
 use Dtkahl\FormBuilder\Field;
 use Dtkahl\FormBuilder\FieldSet;
 use Respect\Validation\Validator;
 
-// TODO upgrade to newest PHPUnit for PHP7 only because we can ;)
-class FormBuilderTest extends \PHPUnit_Framework_TestCase
+class FormBuilderTest extends TestCase
 {
 
     /** @var FieldSet */
