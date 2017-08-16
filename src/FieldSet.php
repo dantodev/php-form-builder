@@ -100,8 +100,11 @@ abstract class FieldSet implements \ArrayAccess, TwigRenderableInterface
      * @param Field $field
      * @return Field
      */
-    protected function setField(string $name, Field $field) : FIeld
+    protected function setField(string $name, ?Field $field = null) : FIeld
     {
+        if ($field === null) {
+            $field = new Field;
+        }
         $this->removeFieldSet($name); // because name must be unique
         $this->fields->set($name, $field);
         $field->setName($name);
@@ -217,6 +220,25 @@ abstract class FieldSet implements \ArrayAccess, TwigRenderableInterface
     }
 
     /**
+     * @return array
+     */
+    public function getValues() : array
+    {
+        $values = [];
+
+        foreach ($this->fields->toArray() as $name=>$field) {
+            /** @var Field $field */
+            $values[$name] = $field->getValue();
+        }
+        foreach ($this->field_sets->toArray() as $name=>$field_set) {
+            /** @var FieldSet $field_set */
+            $values[$name] = $field_set->getValues();
+        }
+
+        return $values;
+    }
+
+    /**
      * @param $name
      * @param Validator $validator
      * @return self|$this
@@ -240,8 +262,9 @@ abstract class FieldSet implements \ArrayAccess, TwigRenderableInterface
      * @param array $data
      * @return void
      */
-    public function hydrate(array $data) : void
+    public function hydrate(?array $data) : void
     {
+        $data = (array) $data;
         foreach ($data as $name=>$field_data) {
             $field = $this->fields->get($name);
             if ($field instanceof Field) {

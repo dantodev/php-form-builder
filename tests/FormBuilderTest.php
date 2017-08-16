@@ -17,7 +17,7 @@ class FormBuilderTest extends \PHPUnit_Framework_TestCase
         $sub_form = new class extends FieldSet {
             public function setUp() {
                 $this->setField('first_name', new Field);
-                $this->setField('last_name', new Field);
+                $this->setField('last_name');
             }
             public function setUpValidators() {
                 $this->setValidator('first_name', Validator::stringType());
@@ -68,14 +68,16 @@ class FormBuilderTest extends \PHPUnit_Framework_TestCase
 
     public function testHydrate()
     {
-        $this->form->hydrate([
+        $values = [
             'name' => ['first_name' => 'John', 'last_name' => 'Smith'],
             'email' => 'john.smith@tardis.space',
             'age' => 42
-        ]);
+        ];
+        $this->form->hydrate($values);
         $this->assertEquals('john.smith@tardis.space', $this->form->getValue('email'));
         $this->assertEquals(42, $this->form->getValue('age'));
         $this->assertEquals('John', $this->form->getFieldSet('name')->getValue('first_name'));
+        $this->assertEquals($values, $this->form->getValues());
     }
 
     public function testArrayAccess()
