@@ -14,7 +14,7 @@ class FormBuilderTest extends TestCase
 
     public function setUp()
     {
-        $this->form = new TestForm;
+        $this->form = new TestForm(['test_option' => 'foo']);
     }
 
     public function testValidationAndMessages()
@@ -81,6 +81,13 @@ class FormBuilderTest extends TestCase
         $this->assertTrue($form->getChild('bar')->isValid());
         $form->getChild('foo')->setValue('yes');
         $this->assertFalse($form->getChild('bar')->isValid());
+    }
+
+    function testOptionsHeredity()
+    {
+        $this->assertEquals('foo', $this->form->options()->get('test_option'));
+        $this->assertEquals('foo', $this->form->getChild('email')->options()->get('test_option'));
+        $this->assertFalse($this->form->getChild('age')->options()->has('test_option'));
     }
 
 }

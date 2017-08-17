@@ -27,7 +27,9 @@ abstract class MapField extends AbstractField implements \ArrayAccess
         $this->children->set($name, $child);
         $child->setName($name);
         $child->setParent($this);
-        // TODO maybe merge options?
+        if ($child->options()->get('options_heredity', true)) { // TODO doc
+            $child->options()->merge($this->options(), true);
+        }
         return $child;
     }
 
