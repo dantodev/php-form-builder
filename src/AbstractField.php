@@ -70,6 +70,17 @@ abstract class AbstractField
         return $this->options;
     }
 
+    public function getOption($key, $default)
+    {
+        return $this->options->get($key, $default);
+    }
+
+    public function setOption($key, $value) : self
+    {
+        $this->options->set($key, $value);
+        return $this;
+    }
+
     public function setParent(AbstractField $parent)
     {
         if ($this->hasParent()) {
