@@ -1,6 +1,7 @@
 <?php namespace Dtkahl\FormBuilderTest;
 
 use Dtkahl\FormBuilder\AbstractField;
+use Dtkahl\FormBuilder\CollectionField;
 use PHPUnit\Framework\TestCase;
 use Dtkahl\FormBuilder\Field;
 use Dtkahl\FormBuilder\MapField;
@@ -88,6 +89,24 @@ class FormBuilderTest extends TestCase
         $this->assertEquals('foo', $this->form->options()->get('test_option'));
         $this->assertEquals('foo', $this->form->getChild('email')->options()->get('test_option'));
         $this->assertFalse($this->form->getChild('age')->options()->has('test_option'));
+    }
+
+    public function testCollectionField()
+    {
+        $form = new CollectionField(['child_class' => TestCollectibleField::class]);
+        $data = [
+            ["id" => 1, "foo" => "bar"],
+            ["id" => 2, "foo" => "123"],
+        ];
+        $this->assertEmpty($form->getValue());
+        $form->setValue($data);
+        $this->assertEquals(["1" => $data[0],"2" => $data[1]], $form->getValue());
+        $this->assertFalse($form->isValid());
+        var_dump($form->getMessages());
+        /** @var MapField $element_2 */
+        $element_2 = $form->getChild(2);
+        $element_2->getChild("foo")->setValue("abc");
+        $this->assertTrue($form->isValid());
     }
 
 }

@@ -12,4 +12,5 @@ class TestForm extends MapField
         $this->setChild('email')->setValidator(Validator::email());
         $this->setChild('age', new Field(['options_heredity' => false]));
     }
+
 }

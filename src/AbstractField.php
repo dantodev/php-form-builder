@@ -114,7 +114,7 @@ abstract class AbstractField
         return $this;
     }
 
-    protected function validate() : array
+    protected function validate()
     {
         $validator = $this->validator;
         if ($validator instanceof \Closure) {
@@ -138,9 +138,12 @@ abstract class AbstractField
 
     public function isValid() : bool
     {
-        $this->messages = $this->validate();
-        $this->valid = empty($this->messages);
-        return $this->valid;
+        $valid = $this->validate();
+        if (is_array($valid)) {
+            $this->messages = $valid;
+            $valid = empty($this->messages);
+        }
+        return $valid;
     }
 
     public function getMessages() : array
