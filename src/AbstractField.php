@@ -70,7 +70,7 @@ abstract class AbstractField
         return $this->options;
     }
 
-    public function getOption($key, $default)
+    public function getOption($key, $default = null)
     {
         return $this->options->get($key, $default);
     }
