@@ -58,7 +58,9 @@ class CollectionField extends AbstractField
         }
         $child->setParent($this);
         $child->hydrate($child_data);
-        $this->children->set($child->getUniqueIdentifier(), $child);
+        $identifier = $child->getUniqueIdentifier();
+        $child->setName($identifier);
+        $this->children->set($identifier, $child);
         return $child;
     }
 
