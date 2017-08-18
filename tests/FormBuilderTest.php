@@ -20,6 +20,8 @@ class FormBuilderTest extends TestCase
 
     public function testValidationAndMessages()
     {
+        $this->assertTrue($this->form->isValid());
+        $this->form->validate();
         $this->assertFalse($this->form->isValid());
         $this->assertEquals(["name", "email"], array_keys($this->form->getMessages()));
         $this->form->getChild('email')->setValue(12);
@@ -31,12 +33,12 @@ class FormBuilderTest extends TestCase
         $this->assertEquals('name[first_name]', $this->form->getChild('name')->getChild('first_name')->getName(true));
         $this->form->hydrate(["name" => ["first_name" => "John"]]);
         $this->form->getChild('name')->getChild('last_name')->setValue('Smith');
-        $this->assertFalse($this->form->isValid());
+        $this->assertFalse($this->form->validate());
         $this->assertTrue($this->form->getChild('name')->getChild('first_name')->isValid());
         $this->assertTrue($this->form->getChild('name')->getChild('last_name')->isValid());
         $this->assertEquals(["email"], array_keys($this->form->getMessages()));
         $this->form->getChild('email')->setValue('john.smith@tardis.space');
-        $this->assertTrue($this->form->isValid());
+        $this->assertTrue($this->form->validate());
         $this->assertEmpty(array_keys($this->form->getMessages()));
     }
 
@@ -79,9 +81,9 @@ class FormBuilderTest extends TestCase
                 });
             }
         };
-        $this->assertTrue($form->getChild('bar')->isValid());
+        $this->assertTrue($form->getChild('bar')->validate());
         $form->getChild('foo')->setValue('yes');
-        $this->assertFalse($form->getChild('bar')->isValid());
+        $this->assertFalse($form->getChild('bar')->validate());
     }
 
     function testOptionsHeredity()
@@ -101,12 +103,12 @@ class FormBuilderTest extends TestCase
         $this->assertEmpty($form->getValue());
         $form->setValue($data);
         $this->assertEquals(["1" => $data[0],"2" => $data[1]], $form->getValue());
-        $this->assertFalse($form->isValid());
+        $this->assertFalse($form->validate());
         var_dump($form->getMessages());
         /** @var MapField $element_2 */
         $element_2 = $form->getChild(2);
         $element_2->getChild("foo")->setValue("abc");
-        $this->assertTrue($form->isValid());
+        $this->assertTrue($form->validate());
     }
 
 }

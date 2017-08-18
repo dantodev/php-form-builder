@@ -84,14 +84,10 @@ abstract class MapField extends AbstractField implements \ArrayAccess
      */
     public function validate()
     {
-        $messages = parent::validate();
-        $invalid_children = $this->children->copy()->filter(function (string $name, AbstractField $child) {
-            return !$child->isValid();
-        })->count();
-        if (count($messages) > 0) {
-            return $messages;
-        }
-        return $invalid_children == 0;
+        $this->valid = $this->children->copy()->filter(function (string $name, AbstractField $child) {
+                return !$child->validate();
+            })->count() == 0 && parent::validate();
+        return $this->valid;
     }
 
 

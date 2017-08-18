@@ -23,7 +23,10 @@ abstract class AbstractField
     private $validator = null;
 
     /** @var array|null */
-    private $messages = null;
+    protected $messages = [];
+
+    /** @var bool */
+    protected $valid = true;
 
 
     /**
@@ -125,8 +128,9 @@ abstract class AbstractField
         return $this;
     }
 
-    protected function validate()
+    public function validate()
     {
+        $this->valid = true;
         $validator = $this->validator;
         if ($validator instanceof \Closure) {
             $validator = $validator($this); // TODO doco
@@ -141,20 +145,16 @@ abstract class AbstractField
                 foreach ($e->getIterator() as $e2) {
                     $e2->setParams($validation_params);
                 }
-                return $e->getMessages();
+                $this->messages = $e->getMessages();
+                $this->valid = false;
             }
         }
-        return [];
+        return $this->valid;
     }
 
     public function isValid() : bool
     {
-        $valid = $this->validate();
-        if (is_array($valid)) {
-            $this->messages = $valid;
-            $valid = empty($this->messages);
-        }
-        return $valid;
+        return $this->valid;
     }
 
     public function getMessages() : array
