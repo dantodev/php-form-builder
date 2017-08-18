@@ -79,4 +79,9 @@ class CollectionField extends AbstractField
         return $child;
     }
 
+    public function children() : array
+    {
+        return $this->children->toArray();
+    }
+
 }
