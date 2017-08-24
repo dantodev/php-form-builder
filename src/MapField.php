@@ -71,7 +71,7 @@ abstract class MapField extends AbstractField implements \ArrayAccess
      * @param array $data
      * @return void
      */
-    public function hydrate($data) : void
+    protected function hydrate($data) : void
     {
         $data = (array) $data;
         foreach ($data as $name=>$field_data) {
