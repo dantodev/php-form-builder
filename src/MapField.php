@@ -60,7 +60,7 @@ abstract class MapField extends AbstractField implements \ArrayAccess
      * @param mixed|null $default
      * @return array
      */
-    public function toValue($default = null) : array
+    public function toValue($default) : array
     {
         return $this->children->copy()->map(function ($name, $child) {
             /** @var AbstractField $child */

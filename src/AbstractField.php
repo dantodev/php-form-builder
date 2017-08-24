@@ -119,11 +119,11 @@ abstract class AbstractField
 
     abstract protected function fromValue($value);
 
-    abstract protected function toValue($default = null);
+    abstract protected function toValue($default);
 
     public function getValue($default = null)
     {
-        return $this->toValue($default ?: $this->getOption('default_value'));
+        return $this->toValue($default);
     }
 
     public function setValue($data) : self

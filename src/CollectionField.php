@@ -64,7 +64,7 @@ class CollectionField extends AbstractField
         return $child;
     }
 
-    public function toValue($default = null) : array
+    public function toValue($default) : array
     {
         return $this->children->copy()->map(function ($name, $child) {
             /** @var AbstractField $child */

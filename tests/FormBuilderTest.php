@@ -23,6 +23,7 @@ class FormBuilderTest extends TestCase
         $this->assertTrue($this->form->isValid());
         $this->form->validate();
         $this->assertFalse($this->form->isValid());
+        $this->assertEquals("default", $this->form->getChild('email')->getValue("default"));
         $this->assertEquals(["name", "email"], array_keys($this->form->getMessages()));
         $this->form->getChild('email')->setValue(12);
         $this->assertEquals('email', $this->form->getChild('email')->getName());

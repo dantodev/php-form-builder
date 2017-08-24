@@ -13,7 +13,7 @@ class Field extends AbstractField
         return $this;
     }
 
-    public function toValue($default = null)
+    public function toValue($default)
     {
         return $this->value ?: $default;
     }
