@@ -117,13 +117,18 @@ abstract class AbstractField
         return $this;
     }
 
-    abstract protected function hydrate($data);
+    abstract protected function fromValue($value);
 
-    abstract public function getValue();
+    abstract protected function toValue($default = null);
+
+    public function getValue($default = null)
+    {
+        return $this->toValue($default ?: $this->getOption('default_value'));
+    }
 
     public function setValue($data) : self
     {
-        $this->hydrate($data);
+        $this->fromValue($data);
         $this->messages = [];
         return $this;
     }

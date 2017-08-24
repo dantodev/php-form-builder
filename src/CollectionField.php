@@ -29,7 +29,7 @@ class CollectionField extends AbstractField
     public function setUp() : void
     {}
 
-    public function hydrate($data)
+    public function fromValue($data)
     {
         $data = (array) $data;
         foreach ($data as $child_data) {
@@ -57,14 +57,14 @@ class CollectionField extends AbstractField
             $child->options()->merge($this->options(), true);
         }
         $child->setParent($this);
-        $child->hydrate($child_data);
+        $child->setValue($child_data);
         $identifier = $child->getUniqueIdentifier();
         $child->setName($identifier);
         $this->children->set($identifier, $child);
         return $child;
     }
 
-    public function getValue() : array
+    public function toValue($default = null) : array
     {
         return $this->children->copy()->map(function ($name, $child) {
             /** @var AbstractField $child */

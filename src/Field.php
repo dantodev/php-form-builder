@@ -7,15 +7,15 @@ class Field extends AbstractField
     public function setUp(): void
     {}
 
-    public function hydrate($value) : self
+    public function fromValue($value) : self
     {
         $this->value = $value;
         return $this;
     }
 
-    public function getValue()
+    public function toValue($default = null)
     {
-        return $this->value;
+        return $this->value ?: $default;
     }
 
 }

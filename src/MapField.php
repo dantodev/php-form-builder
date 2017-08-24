@@ -57,9 +57,10 @@ abstract class MapField extends AbstractField implements \ArrayAccess
     }
 
     /**
+     * @param mixed|null $default
      * @return array
      */
-    public function getValue() : array
+    public function toValue($default = null) : array
     {
         return $this->children->copy()->map(function ($name, $child) {
             /** @var AbstractField $child */
@@ -71,7 +72,7 @@ abstract class MapField extends AbstractField implements \ArrayAccess
      * @param array $data
      * @return void
      */
-    protected function hydrate($data) : void
+    protected function fromValue($data) : void
     {
         $data = (array) $data;
         foreach ($data as $name=>$field_data) {

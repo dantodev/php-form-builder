@@ -31,7 +31,7 @@ class FormBuilderTest extends TestCase
         $this->assertFalse($this->form->getChild('name')->getChild('last_name')->isValid());
         $this->assertEquals('first_name', $this->form->getChild('name')->getChild('first_name')->getName());
         $this->assertEquals('name[first_name]', $this->form->getChild('name')->getChild('first_name')->getName(true));
-        $this->form->hydrate(["name" => ["first_name" => "John"]]);
+        $this->form->setValue(["name" => ["first_name" => "John"]]);
         $this->form->getChild('name')->getChild('last_name')->setValue('Smith');
         $this->assertFalse($this->form->validate());
         $this->assertTrue($this->form->getChild('name')->getChild('first_name')->isValid());
@@ -42,14 +42,14 @@ class FormBuilderTest extends TestCase
         $this->assertEmpty(array_keys($this->form->getMessages()));
     }
 
-    public function testHydrate()
+    public function testSetValue()
     {
         $values = [
             'name' => ['first_name' => 'John', 'last_name' => 'Smith'],
             'email' => 'john.smith@tardis.space',
             'age' => 42
         ];
-        $this->form->hydrate($values);
+        $this->form->setValue($values);
         $this->assertEquals('john.smith@tardis.space', $this->form->getChild('email')->getValue());
         $this->assertEquals(42, $this->form->getChild('age')->getValue());
         $this->assertEquals('John', $this->form->getChild('name')->getChild('first_name')->getValue());
@@ -104,7 +104,6 @@ class FormBuilderTest extends TestCase
         $form->setValue($data);
         $this->assertEquals(["1" => $data[0],"2" => $data[1]], $form->getValue());
         $this->assertFalse($form->validate());
-        var_dump($form->getMessages());
         /** @var MapField $element_2 */
         $element_2 = $form->getChild(2);
         $element_2->getChild("foo")->setValue("abc");
