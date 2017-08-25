@@ -105,11 +105,9 @@ class CollectionField extends AbstractField
      */
     public function toSerializedArray(bool $with_value = false)
     {
-        $data = parent::toSerializedArray($with_value);
-        $data["collection"] = array_values($this->children->copy()->map(function ($name, AbstractField $child) {
+        return array_values($this->children->copy()->map(function ($name, AbstractField $child) {
             return $child->toSerializedArray();
         })->toArray());
-        return $data;
     }
 
 }
