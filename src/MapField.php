@@ -34,6 +34,12 @@ abstract class MapField extends AbstractField implements \ArrayAccess
         $this->children->set($name, $child);
         $child->setName($name);
         $child->options()->merge($options);
+
+        $default_validator = $this->getOption("default_validator");
+        if (is_callable($default_validator)) {
+            $child->setValidator($default_validator);
+        }
+
         return $child;
     }
 
@@ -62,11 +68,11 @@ abstract class MapField extends AbstractField implements \ArrayAccess
 
 
     /**
-     * @return Map|MapField[]
+     * @return MapField[]
      */
-    public function children()
+    public function children() : array
     {
-        return $this->children;
+        return $this->children->toArray();
     }
 
     /**
