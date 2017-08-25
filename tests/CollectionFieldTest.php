@@ -2,10 +2,9 @@
 
 use Dtkahl\FormBuilder\CollectionField;
 use PHPUnit\Framework\TestCase;
-use Dtkahl\FormBuilder\Field;
 use Dtkahl\FormBuilder\MapField;
 
-class FormBuilderTest extends TestCase
+class CollectionFieldTest extends TestCase
 {
 
     /** @var CollectionField */
@@ -35,7 +34,9 @@ class FormBuilderTest extends TestCase
 
     public function testSerialize()
     {
-        $this->assertArrayHasKey("collection", $this->form->toSerializedArray());
+        $this->assertArrayNotHasKey("collection", $this->form->toSerializedArray());
+        $this->assertArrayHasKey("collection", $this->form->toSerializedArray(true));
+        $this->assertArrayHasKey("new_config", $this->form->toSerializedArray());
     }
 
 }

@@ -52,14 +52,21 @@ class CollectionField extends AbstractField
     }
 
     /**
+     * @return AbstractField|CollectibleInterface
+     */
+    public function createChildClassInstance() : AbstractField
+    {
+        $class_name = $this->child_class;
+        return new $class_name($this->child_options);
+    }
+
+    /**
      * @param array $child_data
      * @return AbstractField
      */
     public function appendChild(array $child_data) : AbstractField
     {
-        $class_name = $this->child_class;
-        /** @var AbstractField|CollectibleInterface $child */
-        $child = new $class_name($this->child_options);
+        $child = $this->createChildClassInstance();
         $child->setValue($child_data);
         $identifier = $child->getUniqueIdentifier();
         $child->setName($identifier);
@@ -106,9 +113,12 @@ class CollectionField extends AbstractField
     public function toSerializedArray(bool $with_value = false)
     {
         $data = parent::toSerializedArray($with_value);
-        $data["collection"] = array_values($this->children->copy()->map(function ($name, AbstractField $child) {
-            return $child->toSerializedArray();
-        })->toArray());
+        if ($with_value) {
+            $data["collection"] = array_values($this->children->copy()->map(function ($name, AbstractField $child) {
+                return $child->toSerializedArray(true);
+            })->toArray());
+        }
+        $data["new_config"] = $this->createChildClassInstance()->toSerializedArray();
         return $data;
     }
 
