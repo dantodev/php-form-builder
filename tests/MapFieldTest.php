@@ -26,7 +26,7 @@ class MapFieldTest extends TestCase
 
     public function testChildren()
     {
-        $this->assertEquals(2, $this->form->children()->count());
+        $this->assertCount(2, $this->form->children());
         $this->assertEquals("name", $this->form->getChild("name")->getName());
     }
 
