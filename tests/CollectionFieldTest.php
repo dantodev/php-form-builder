@@ -35,7 +35,7 @@ class FormBuilderTest extends TestCase
 
     public function testSerialize()
     {
-        $this->assertEquals(array_values($this->form->toSerializedArray()), $this->form->toSerializedArray());
+        $this->assertArrayHasKey("collection", $this->form->toSerializedArray());
     }
 
 }

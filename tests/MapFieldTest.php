@@ -26,7 +26,7 @@ class MapFieldTest extends TestCase
 
     public function testChildren()
     {
-        $this->assertCount(2, $this->form->children());
+        $this->assertEquals(2, $this->form->children()->count());
         $this->assertEquals("name", $this->form->getChild("name")->getName());
     }
 
@@ -68,7 +68,7 @@ class MapFieldTest extends TestCase
 
     public function testSerialize()
     {
-        $this->assertEquals(array_keys($this->form->children()), array_keys($this->form->toSerializedArray()));
+        $this->assertArrayHasKey("map", $this->form->toSerializedArray());
     }
 
 }

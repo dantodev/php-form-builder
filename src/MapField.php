@@ -212,9 +212,11 @@ abstract class MapField extends AbstractField implements \ArrayAccess
      */
     public function toSerializedArray(bool $with_value = false)
     {
-        return $this->children->copy()->map(function ($name, AbstractField $child) use($with_value) {
+        $data = parent::toSerializedArray($with_value);
+        $data["map"] = array_values($this->children->copy()->map(function ($name, AbstractField $child) use($with_value) {
             return $child->toSerializedArray($with_value);
-        })->toArray();
+        })->toArray());
+        return $data;
     }
 
 }
