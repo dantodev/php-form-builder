@@ -2,6 +2,9 @@
 
 interface CollectibleInterface {
 
+    /**
+     * @return mixed
+     */
     public function getUniqueIdentifier();
 
 }

@@ -4,15 +4,20 @@ class Field extends AbstractField
 {
     protected $value = null;
 
-    public function setUp(): void
-    {}
-
+    /**
+     * @param $value
+     * @return Field
+     */
     public function fromValue($value) : self
     {
         $this->value = $value;
         return $this;
     }
 
+    /**
+     * @param $default
+     * @return mixed
+     */
     public function toValue($default)
     {
         return $this->value ?: $default;

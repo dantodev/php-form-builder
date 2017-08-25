@@ -12,24 +12,28 @@ abstract class MapField extends AbstractField implements \ArrayAccess
     {
         $this->children = new Map;
         parent::__construct($options);
+        $this->setUp();
     }
+
+    /**
+     * define the child fields here
+     */
+    abstract public function setUp() : void;
 
     /**
      * @param string $name
      * @param null|AbstractField $child
+     * @param array $options
      * @return AbstractField
      */
-    protected function setChild(string $name, ?AbstractField $child = null) : AbstractField
+    protected function setChild(string $name, ?AbstractField $child = null, array $options = []) : AbstractField
     {
         if ($child === null) {
             $child = new Field;
         }
         $this->children->set($name, $child);
         $child->setName($name);
-        $child->setParent($this);
-        if ($child->options()->get('options_heredity', true)) { // TODO doc
-            $child->options()->merge($this->options(), true);
-        }
+        $child->options()->merge($options);
         return $child;
     }
 
@@ -54,6 +58,15 @@ abstract class MapField extends AbstractField implements \ArrayAccess
             return $child;
         }
         throw new \RuntimeException("Unknown field '$name'.");
+    }
+
+
+    /**
+     * @return Map|MapField[]
+     */
+    public function children()
+    {
+        return $this->children;
     }
 
     /**
@@ -86,9 +99,54 @@ abstract class MapField extends AbstractField implements \ArrayAccess
     public function validate()
     {
         $this->valid = $this->children->copy()->filter(function (string $name, AbstractField $child) {
-                return !$child->validate();
+                return $this->checkChildConditions($name) && !$child->validate();
             })->count() == 0 && parent::validate();
         return $this->valid;
+    }
+
+    /**
+     * @param string $name
+     * @return bool
+     */
+    public function checkChildConditions(string $name)
+    {
+        $child = $this->getChild($name);
+        $conditions = $child->getOption("conditions", []);
+        foreach ($conditions as $condition) {
+            if (!$this->checkCondition($condition)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * @param $condition
+     * @return bool
+     */
+    protected function checkCondition(array $condition)
+    {
+        if (count($condition) < 3) {
+            throw new \InvalidArgumentException("Field Condition need to have atleast 3 items.");
+        }
+        [$name, $comparator, $value] = $condition;
+        $actual_field = $this->getChild($name)->getValue();
+        switch ($comparator) {
+            case '==':
+                return $actual_field == $value;
+            case '!=':
+                return $actual_field != $value;
+            case '===':
+                return $actual_field === $value;
+            case '!==':
+                return $actual_field !== $value;
+            case 'in':
+                return in_array($actual_field, $value);
+            case 'not in':
+                return !in_array($actual_field, $value);
+            default:
+                throw new \InvalidArgumentException("Unknown comparator '$comparator'.");
+        }
     }
 
 
@@ -140,6 +198,19 @@ abstract class MapField extends AbstractField implements \ArrayAccess
     public function offsetUnset($offset)
     {
         $this->removeChild($offset);
+    }
+
+    /**
+     * @param bool $with_value
+     * @return array
+     */
+    public function toSerializedArray(bool $with_value = false)
+    {
+        $data = parent::toSerializedArray($with_value);
+        $data["map"] = array_values($this->children->copy()->map(function ($name, AbstractField $child) use($with_value) {
+            return $child->toSerializedArray($with_value);
+        })->toArray());
+        return $data;
     }
 
 }

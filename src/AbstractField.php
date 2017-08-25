@@ -1,8 +1,6 @@
 <?php namespace Dtkahl\FormBuilder;
 
 use Dtkahl\ArrayTools\Map;
-use Respect\Validation\Exceptions\NestedValidationException;
-use Respect\Validation\Validator;
 
 /**
  * Class AbstractField
@@ -16,11 +14,11 @@ abstract class AbstractField
     /** @var Map */
     private $options;
 
-    /** @var null|AbstractField */
-    private $parent = null;
-
-    /** @var \Closure|Validator|null */
+    /** @var \Closure|null */
     private $validator = null;
+
+    /** @var \Closure|null */
+    private $formatter = null;
 
     /** @var array|null */
     protected $messages = [];
@@ -36,96 +34,120 @@ abstract class AbstractField
     {
 
         $this->options = new Map($options);
-        $this->setUp();
     }
 
     /**
-     * define the child fields here
+     * @param string $name
      */
-    abstract public function setUp() : void;
-
     public function setName(string $name)
     {
-        if (!is_null($this->name) && $this->hasParent()) {
-            throw new \RuntimeException("It is not allowed to change the name if a parent is defined.");
-        }
         $this->name = $name;
     }
 
-    public function getName(bool $with_path = false) : ?string
+    /**
+     * @return null|string
+     */
+    public function getName() : ?string
     {
-        if (!$with_path) {
-            return $this->name;
-        }
-        $parent = $this->getParent();
-        $trace = [$this->name];
-        while ($parent instanceof AbstractField) {
-            if ($parent->hasParent()) {
-                array_unshift($trace, $parent->getName());
-            }
-            $parent = $parent->getParent();
-        }
-        return array_shift($trace) . join('', array_map(function ($name) {return "[$name]";}, $trace));
+        return $this->name;
     }
 
+    /**
+     * @return Map
+     */
     public function options() : Map
     {
         return $this->options;
     }
 
+    /**
+     * @param $key
+     * @param null $default
+     * @return null
+     */
     public function getOption($key, $default = null)
     {
         return $this->options->get($key, $default);
     }
 
+    /**
+     * @param $key
+     * @param $value
+     * @return AbstractField
+     */
     public function setOption($key, $value) : self
     {
         $this->options->set($key, $value);
         return $this;
     }
 
-    public function setParent(AbstractField $parent)
+    /**
+     * @param callable $validator
+     * @return AbstractField
+     */
+    public function setValidator(callable $validator) : self
     {
-        if ($this->hasParent()) {
-            throw new \RuntimeException("It is not allowed to change the parent if another is already defined.");
-        }
-        $this->parent = $parent;
-    }
-
-    public function getParent() : ?AbstractField
-    {
-        return $this->parent;
-    }
-
-    public function hasParent() : bool
-    {
-        return !is_null($this->parent);
-    }
-
-    public function setValidator($validator) : self
-    {
-        if (!$validator instanceof Validator && !is_callable($validator)) {
-            throw new \InvalidArgumentException("Given \$validator must instance of \Respect\Validation\Validator or callable.");
-        }
         $this->validator = $validator;
         return $this;
     }
 
+    /**
+     * @return AbstractField
+     */
     public function removeValidator() : self
     {
         $this->validator = null;
         return $this;
     }
 
-    abstract protected function fromValue($value);
-
-    abstract protected function toValue($default);
-
-    public function getValue($default = null)
+    /**
+     * @param callable $formatter
+     * @return AbstractField
+     */
+    public function setFormatter(callable $formatter) : self
     {
-        return $this->toValue($default);
+        $this->formatter = $formatter;
+        return $this;
     }
 
+    /**
+     * @return AbstractField
+     */
+    public function removeFormatter() : self
+    {
+        $this->formatter = null;
+        return $this;
+    }
+
+    /**
+     * @param $value
+     */
+    abstract protected function fromValue($value);
+
+    /**
+     * @param $default
+     * @return mixed
+     */
+    abstract protected function toValue($default);
+
+    /**
+     * @param null $default
+     * @return mixed
+     */
+    public function getValue($default = null)
+    {
+        $value = $this->toValue($default);
+        $formatter = $this->formatter;
+        if (is_callable($formatter)) {
+            $value = $formatter($value);
+        }
+        return $value;
+    }
+
+    /**
+     * @param $data
+     * @return AbstractField
+     */
     public function setValue($data) : self
     {
         $this->fromValue($data);
@@ -133,38 +155,55 @@ abstract class AbstractField
         return $this;
     }
 
+    /**
+     * @return bool
+     */
     public function validate()
     {
         $this->valid = true;
         $validator = $this->validator;
-        if ($validator instanceof \Closure) {
-            $validator = $validator($this); // TODO doco
-        }
-        if ($validator instanceof Validator) {
-            $validator->setName($this->options()->get('label', $this->getName()));
-            try {
-                $validator->assert($this->getValue());
-            } catch (NestedValidationException $e) {
-                $validation_params = $this->options()->get('validation_params', []);
-                $e->setParams($validation_params);
-                foreach ($e->getIterator() as $e2) {
-                    $e2->setParams($validation_params);
-                }
-                $this->messages = $e->getMessages();
-                $this->valid = false;
-            }
+        if (is_callable($validator)) {
+            $messages = (array)$validator($this);
+            $this->messages = $messages;
+            $this->valid = empty($messages);
         }
         return $this->valid;
     }
 
+    /**
+     * @return bool
+     */
     public function isValid() : bool
     {
         return $this->valid;
     }
 
+    /**
+     * @return array
+     */
     public function getMessages() : array
     {
         return $this->messages;
+    }
+
+    /**
+     * @param bool $with_value
+     * @return array
+     */
+    public function toSerializedArray(bool $with_value = false)
+    {
+        $data = [
+            "name" => $this->getName(),
+            "options" => $this->options()->toSerializedArray()
+        ];
+
+        if ($with_value) {
+            $data["messages"] = $this->getMessages();
+            $data["valid"] = $this->isValid();
+            $data["value"] = $this->getValue();
+        }
+
+        return $data;
     }
 
 }
