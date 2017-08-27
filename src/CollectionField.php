@@ -107,17 +107,14 @@ class CollectionField extends AbstractField
     }
 
     /**
-     * @param bool $with_value
      * @return array
      */
-    public function toSerializedArray(bool $with_value = false)
+    public function toSerializedArray()
     {
-        $data = parent::toSerializedArray($with_value);
-        if ($with_value) {
-            $data["collection"] = array_values($this->children->copy()->map(function ($name, AbstractField $child) {
-                return $child->toSerializedArray(true);
-            })->toArray());
-        }
+        $data = parent::toSerializedArray();
+        $data["collection"] = array_values($this->children->copy()->map(function ($name, AbstractField $child) {
+            return $child->toSerializedArray();
+        })->toArray());
         $data["new_config"] = $this->createChildClassInstance()->toSerializedArray();
         return $data;
     }

@@ -35,11 +35,6 @@ abstract class MapField extends AbstractField implements \ArrayAccess
         $child->setName($name);
         $child->options()->merge($options);
 
-        $default_validator = $this->getOption("default_validator");
-        if (is_callable($default_validator)) {
-            $child->setValidator($default_validator);
-        }
-
         return $child;
     }
 
@@ -207,14 +202,13 @@ abstract class MapField extends AbstractField implements \ArrayAccess
     }
 
     /**
-     * @param bool $with_value
      * @return array
      */
-    public function toSerializedArray(bool $with_value = false)
+    public function toSerializedArray()
     {
-        $data = parent::toSerializedArray($with_value);
-        $data["map"] = array_values($this->children->copy()->map(function ($name, AbstractField $child) use($with_value) {
-            return $child->toSerializedArray($with_value);
+        $data = parent::toSerializedArray();
+        $data["map"] = array_values($this->children->copy()->map(function ($name, AbstractField $child) {
+            return $child->toSerializedArray();
         })->toArray());
         return $data;
     }

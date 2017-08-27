@@ -15,10 +15,10 @@ abstract class AbstractField
     private $options;
 
     /** @var \Closure|null */
-    private $validator = null;
+    protected $validator = null;
 
     /** @var \Closure|null */
-    private $formatter = null;
+    protected $formatter = null;
 
     /** @var array|null */
     protected $messages = [];
@@ -187,23 +187,17 @@ abstract class AbstractField
     }
 
     /**
-     * @param bool $with_value
      * @return array
      */
-    public function toSerializedArray(bool $with_value = false)
+    public function toSerializedArray()
     {
-        $data = [
+        return [
             "name" => $this->getName(),
-            "options" => $this->options()->toSerializedArray()
+            "options" => $this->options()->toSerializedArray(),
+            "valid" => $this->isValid(),
+            "messages" => $this->getMessages(),
+            "value" => $this->getValue()
         ];
-
-        if ($with_value) {
-            $data["messages"] = $this->getMessages();
-            $data["valid"] = $this->isValid();
-            $data["value"] = $this->getValue();
-        }
-
-        return $data;
     }
 
 }

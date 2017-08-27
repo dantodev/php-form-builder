@@ -73,8 +73,7 @@ class FieldTest extends TestCase
         $field->setName("foo");
         $field->setValue("bar");
         $field->setOption("key", "value");
-        $this->assertEquals(["name" => "foo", "options" => ["key" => "value"]], $field->toSerializedArray());
-        $this->assertEquals(["name" => "foo", "options" => ["key" => "value"], "messages" => [], "valid" => true, "value" => "bar"], $field->toSerializedArray(true));
+        $this->assertEquals(["name" => "foo", "options" => ["key" => "value"], "messages" => [], "valid" => true, "value" => "bar"], $field->toSerializedArray());
     }
 
 }

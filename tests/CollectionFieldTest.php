@@ -34,8 +34,7 @@ class CollectionFieldTest extends TestCase
 
     public function testSerialize()
     {
-        $this->assertArrayNotHasKey("collection", $this->form->toSerializedArray());
-        $this->assertArrayHasKey("collection", $this->form->toSerializedArray(true));
+        $this->assertArrayHasKey("collection", $this->form->toSerializedArray());
         $this->assertArrayHasKey("new_config", $this->form->toSerializedArray());
     }
 
