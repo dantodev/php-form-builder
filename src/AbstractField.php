@@ -12,7 +12,7 @@ abstract class AbstractField
     private $name;
 
     /** @var Map */
-    private $options;
+    protected $options = [];
 
     /** @var \Closure|null */
     protected $validator = null;
@@ -32,8 +32,7 @@ abstract class AbstractField
      */
     public function __construct(array $options = [])
     {
-
-        $this->options = new Map($options);
+        $this->options = (new Map($this->options))->merge($options);
     }
 
     /**

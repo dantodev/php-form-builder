@@ -16,6 +16,7 @@ class MapFieldTest extends TestCase
     public function setUp()
     {
         $this->form = new class extends MapField {
+            protected $options = ["default_option" => 'is set'];
             public function setUp(): void
             {
                 $this->setChild("name")->setValidator(new RespectValidator(Validator::notEmpty()));
@@ -69,6 +70,11 @@ class MapFieldTest extends TestCase
     public function testSerialize()
     {
         $this->assertArrayHasKey("map", $this->form->toSerializedArray());
+    }
+
+    public function testPredefinedDefaultOptions()
+    {
+        $this->assertEquals("is set", $this->form->getOption("default_option"));
     }
 
 }
