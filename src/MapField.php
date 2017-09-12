@@ -114,7 +114,11 @@ abstract class MapField extends AbstractField implements \ArrayAccess
         $child = $this->getChild($name);
         $conditions = $child->getOption("conditions", []);
         foreach ($conditions as $condition) {
-            if (!$this->checkCondition($condition)) {
+            if (count($condition) < 3) {
+                throw new \InvalidArgumentException("Field Condition need to have atleast 3 items.");
+            }
+            [$name, $comparator, $value] = $condition;
+            if (!$this->checkCondition($name, $comparator, $value)) {
                 return false;
             }
         }
@@ -122,15 +126,13 @@ abstract class MapField extends AbstractField implements \ArrayAccess
     }
 
     /**
-     * @param $condition
+     * @param $name
+     * @param $comparator
+     * @param $value
      * @return bool
      */
-    protected function checkCondition(array $condition)
+    protected function checkCondition($name, $comparator, $value)
     {
-        if (count($condition) < 3) {
-            throw new \InvalidArgumentException("Field Condition need to have atleast 3 items.");
-        }
-        [$name, $comparator, $value] = $condition;
         $actual_field = $this->getChild($name)->getValue();
         switch ($comparator) {
             case '==':
