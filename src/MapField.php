@@ -122,12 +122,12 @@ abstract class MapField extends AbstractField implements \ArrayAccess
         return true;
     }
 
-    protected function mapCondition($condition, $actual_value_added = false)
+    protected function mapCondition($condition)
     {
         if (count($condition) < 3) {
             throw new \InvalidArgumentException("Field Condition need to have atleast 3 items.");
         }
-        if (!$actual_value_added) {
+        if (count($condition) == 3) {
             $condition[] = $actual_value = $this->getChild($condition[0])->getValue();
         }
         return $condition;
