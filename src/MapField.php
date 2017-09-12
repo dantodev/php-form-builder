@@ -114,39 +114,47 @@ abstract class MapField extends AbstractField implements \ArrayAccess
         $child = $this->getChild($name);
         $conditions = $child->getOption("conditions", []);
         foreach ($conditions as $condition) {
-            if (count($condition) < 3) {
-                throw new \InvalidArgumentException("Field Condition need to have atleast 3 items.");
-            }
-            [$name, $comparator, $value] = $condition;
-            if (!$this->checkCondition($name, $comparator, $value)) {
+            [$name, $comparator, $value, $actual_value] = $this->mapCondition($condition);
+            if (!$this->checkCondition($name, $comparator, $value, $actual_value)) {
                 return false;
             }
         }
         return true;
     }
 
+    protected function mapCondition($condition, $actual_value_added = false)
+    {
+        if (count($condition) < 3) {
+            throw new \InvalidArgumentException("Field Condition need to have atleast 3 items.");
+        }
+        if (!$actual_value_added) {
+            $condition[] = $actual_value = $this->getChild($condition[0])->getValue();
+        }
+        return $condition;
+    }
+
     /**
      * @param $name
      * @param $comparator
      * @param $value
+     * @param $actual_value
      * @return bool
      */
-    protected function checkCondition($name, $comparator, $value)
+    protected function checkCondition($name, $comparator, $value, $actual_value)
     {
-        $actual_field = $this->getChild($name)->getValue();
         switch ($comparator) {
             case '==':
-                return $actual_field == $value;
+                return $actual_value == $value;
             case '!=':
-                return $actual_field != $value;
+                return $actual_value != $value;
             case '===':
-                return $actual_field === $value;
+                return $actual_value === $value;
             case '!==':
-                return $actual_field !== $value;
+                return $actual_value !== $value;
             case 'in':
-                return in_array($actual_field, $value);
+                return in_array($actual_value, $value);
             case 'not in':
-                return !in_array($actual_field, $value);
+                return !in_array($actual_value, $value);
             default:
                 throw new \InvalidArgumentException("Unknown comparator '$comparator'.");
         }
