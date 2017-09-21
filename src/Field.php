@@ -20,7 +20,7 @@ class Field extends AbstractField
      */
     public function toValue($default)
     {
-        return $this->value ?: $default;
+        return $this->value === null ? $default : $this->value;
     }
 
 }
