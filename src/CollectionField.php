@@ -32,7 +32,7 @@ class CollectionField extends AbstractField
     /**
      * @param array $data
      */
-    public function fromValue($data)
+    protected function fromValue($data)
     {
         $data = (array) $data;
         foreach ($data as $child_data) {
@@ -78,7 +78,7 @@ class CollectionField extends AbstractField
      * @param $default
      * @return array
      */
-    public function toValue($default) : array
+    protected function toValue($default) : array
     {
         return $this->children->copy()->map(function ($name, AbstractField $child) {
             return $child->getValue();

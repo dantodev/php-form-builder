@@ -8,7 +8,7 @@ class Field extends AbstractField
      * @param $value
      * @return Field
      */
-    public function fromValue($value) : self
+    protected function fromValue($value) : self
     {
         $this->value = $value;
         return $this;
@@ -18,7 +18,7 @@ class Field extends AbstractField
      * @param $default
      * @return mixed
      */
-    public function toValue($default)
+    protected function toValue($default)
     {
         return $this->value === null ? $default : $this->value;
     }
