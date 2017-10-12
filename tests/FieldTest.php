@@ -1,5 +1,6 @@
 <?php namespace Dtkahl\FormBuilderTest;
 
+use Dtkahl\FormBuilder\MapperInterface;
 use PHPUnit\Framework\TestCase;
 use Dtkahl\FormBuilder\Field;
 
@@ -54,16 +55,24 @@ class FieldTest extends TestCase
         $this->assertTrue($field->validate());
     }
 
-    public function testFormatter()
+    public function testMapper()
     {
         $field = new Field;
-        $field->setValue("true");
-        $this->assertEquals("true", $field->getValue());
-        $field->setFormatter(function ($value) {
-            return boolval($value);
+        $field->setMapper(new class implements MapperInterface {
+            public function map($value)
+            {
+
+                return boolval($value);
+            }
+            public function unmap($value)
+            {
+                return $value ? "true" : "false";
+            }
         });
+        $field->setValue(true);
         $this->assertEquals(true, $field->getValue());
-        $field->removeFormatter();
+        $this->assertEquals("true", $field->getUnmappedValue());
+        $field->unsetMapper();
         $this->assertEquals("true", $field->getValue());
     }
 

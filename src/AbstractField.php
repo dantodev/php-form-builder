@@ -17,8 +17,8 @@ abstract class AbstractField
     /** @var \Closure|null */
     protected $validator = null;
 
-    /** @var \Closure|null */
-    protected $formatter = null;
+    /** @var MapperInterface|null */
+    protected $mapper = null;
 
     /** @var array|null */
     protected $messages = [];
@@ -100,21 +100,21 @@ abstract class AbstractField
     }
 
     /**
-     * @param callable $formatter
+     * @param MapperInterface $mapper
      * @return AbstractField
      */
-    public function setFormatter(callable $formatter) : self
+    public function setMapper(MapperInterface $mapper) : self
     {
-        $this->formatter = $formatter;
+        $this->mapper = $mapper;
         return $this;
     }
 
     /**
      * @return AbstractField
      */
-    public function removeFormatter() : self
+    public function unsetMapper() : self
     {
-        $this->formatter = null;
+        $this->mapper = null;
         return $this;
     }
 
@@ -136,11 +136,12 @@ abstract class AbstractField
     public function getValue($default = null)
     {
         $value = $this->toValue($default);
-        $formatter = $this->formatter;
-        if (is_callable($formatter)) {
-            $value = $formatter($value);
-        }
-        return $value;
+        return $this->mapper instanceof MapperInterface ? $this->mapper->map($value) : $value;
+    }
+
+    public function getUnmappedValue($default = null)
+    {
+        return $this->toValue($default);
     }
 
     /**
@@ -149,7 +150,7 @@ abstract class AbstractField
      */
     public function setValue($data) : self
     {
-        $this->fromValue($data);
+        $this->fromValue($this->mapper instanceof MapperInterface ? $this->mapper->unmap($data) : $data);
         $this->messages = [];
         return $this;
     }

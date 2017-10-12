@@ -1,6 +1,7 @@
 <?php namespace Dtkahl\FormBuilderTest;
 
 use Dtkahl\FormBuilder\CollectionField;
+use Dtkahl\FormBuilder\MapperInterface;
 use Dtkahl\FormBuilder\RespectValidator;
 use PHPUnit\Framework\TestCase;
 use Dtkahl\FormBuilder\Field;
@@ -75,6 +76,30 @@ class MapFieldTest extends TestCase
     public function testPredefinedDefaultOptions()
     {
         $this->assertEquals("is set", $this->form->getOption("default_option"));
+    }
+
+    public function testMapper()
+    {
+        $data = ["name" => "John", "age" => 22];
+        $this->form->setMapper(new class implements MapperInterface {
+            public function map($value)
+            {
+
+                return ["mapped" => [
+                    "name" => $value["name"],
+                    "age" => $value["age"],
+                ]];
+            }
+            public function unmap($value)
+            {
+                return $value["mapped"];
+            }
+        });
+        $this->form->setValue(["mapped" => $data]);
+        $this->assertEquals(["mapped" => $data], $this->form->getValue());
+        $this->assertEquals($data, $this->form->getUnmappedValue());
+        $this->form->unsetMapper();
+        $this->assertEquals($data, $this->form->getValue());
     }
 
 }
