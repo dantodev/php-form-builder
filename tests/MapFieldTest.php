@@ -1,10 +1,8 @@
 <?php namespace Dtkahl\FormBuilderTest;
 
-use Dtkahl\FormBuilder\CollectionField;
 use Dtkahl\FormBuilder\MapperInterface;
 use Dtkahl\FormBuilder\RespectValidator;
 use PHPUnit\Framework\TestCase;
-use Dtkahl\FormBuilder\Field;
 use Dtkahl\FormBuilder\MapField;
 use Respect\Validation\Validator;
 
