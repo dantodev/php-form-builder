@@ -156,14 +156,15 @@ abstract class AbstractField
     }
 
     /**
+     * @param null $data
      * @return bool
      */
-    public function validate()
+    public function validate($data = null)
     {
         $this->valid = true;
         $validator = $this->validator;
         if (is_callable($validator)) {
-            $messages = (array)$validator($this);
+            $messages = (array)$validator($this, $data);
             $this->messages = $messages;
             $this->valid = empty($messages);
         }

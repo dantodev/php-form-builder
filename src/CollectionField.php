@@ -41,13 +41,14 @@ class CollectionField extends AbstractField
     }
 
     /**
-     * @return array|bool
+     * @param null $data
+     * @return bool
      */
-    public function validate()
+    public function validate($data = null)
     {
-        $this->valid = $this->children->copy()->filter(function (string $name, AbstractField $child) {
-            return !$child->validate();
-        })->count() == 0 && parent::validate();
+        $this->valid = $this->children->copy()->filter(function (string $name, AbstractField $child) use ($data) {
+            return !$child->validate($data);
+        })->count() == 0 && parent::validate($data);
         return $this->valid;
     }
 
