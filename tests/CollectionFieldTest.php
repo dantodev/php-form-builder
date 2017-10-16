@@ -12,7 +12,10 @@ class CollectionFieldTest extends TestCase
 
     public function setUp()
     {
-        $this->form = new CollectionField(['child_class' => TestCollectibleField::class]);
+        $this->form = new CollectionField([
+            'child_class' => TestCollectibleField::class,
+            'child_args' => [['foo' => 'bar']]
+        ]);
     }
 
     public function testCollectionField()
@@ -30,6 +33,7 @@ class CollectionFieldTest extends TestCase
         $element_2 = $this->form->getChild(2);
         $element_2->getChild("foo")->setValue("abc");
         $this->assertTrue($this->form->validate());
+        $this->assertEquals('bar', $element_2->getOption("foo"));
     }
 
     public function testSerialize()

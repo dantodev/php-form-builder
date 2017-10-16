@@ -8,7 +8,7 @@ class CollectionField extends AbstractField
     /** @var Map|AbstractField[] */
     protected $children;
     protected $child_class;
-    protected $child_options;
+    protected $child_args;
 
     /**
      * @param array $options
@@ -19,7 +19,7 @@ class CollectionField extends AbstractField
 
         $this->children = new Map();
         $this->child_class = $this->options()->get('child_class');
-        $this->child_options = $this->options()->get('child_options', []);
+        $this->child_args = $this->options()->get('child_args', []);
 
         if (is_null($this->child_class) || !is_subclass_of($this->child_class, AbstractField::class)) {
             throw new \InvalidArgumentException("'child_class' must be a sub class of AbstractField.");
@@ -57,8 +57,9 @@ class CollectionField extends AbstractField
      */
     public function createChildClassInstance() : AbstractField
     {
-        $class_name = $this->child_class;
-        return new $class_name($this->child_options);
+        $name = $this->child_class;
+        $args = $this->child_args;
+        return new $name(...$args);
     }
 
     /**
