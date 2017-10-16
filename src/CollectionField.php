@@ -64,7 +64,7 @@ class CollectionField extends AbstractField
     }
 
     /**
-     * @param array $child_data
+     * @param array|CollectibleInterface $child_data
      * @return AbstractField
      */
     public function appendChild($child_data) : AbstractField
