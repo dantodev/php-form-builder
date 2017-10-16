@@ -53,12 +53,13 @@ class CollectionField extends AbstractField
     }
 
     /**
+     * @param array|null $args
      * @return AbstractField|CollectibleInterface
      */
-    public function createChildClassInstance() : AbstractField
+    public function createChildClassInstance(?array $args = null) : AbstractField
     {
         $name = $this->child_class;
-        $args = $this->child_args;
+        $args = $args ?: $this->child_args;
         return new $name(...$args);
     }
 
@@ -66,9 +67,13 @@ class CollectionField extends AbstractField
      * @param array $child_data
      * @return AbstractField
      */
-    public function appendChild(array $child_data) : AbstractField
+    public function appendChild($child_data) : AbstractField
     {
-        $child = $this->createChildClassInstance();
+        if ($child_data instanceof CollectibleInterface) {
+            $child = $child_data;
+        } else {
+            $child = $this->createChildClassInstance();
+        }
         $child->setValue($child_data);
         $identifier = $child->getUniqueIdentifier();
         $child->setName($identifier);
