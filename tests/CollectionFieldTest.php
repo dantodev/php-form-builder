@@ -27,7 +27,7 @@ class CollectionFieldTest extends TestCase
         ];
         $this->assertEmpty($this->form->getValue());
         $this->form->setValue($data);
-        $this->assertEquals(["1" => $data[0],"2" => $data[1]], $this->form->getValue());
+        $this->assertEquals($data, $this->form->getValue());
         $this->assertFalse($this->form->validate());
         /** @var MapField $element_2 */
         $element_2 = $this->form->getChild(2);
