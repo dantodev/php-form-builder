@@ -73,8 +73,8 @@ class CollectionField extends AbstractField
             $child = $child_data;
         } else {
             $child = $this->createChildClassInstance();
+            $child->setValue($child_data);
         }
-        $child->setValue($child_data);
         $identifier = $child->getUniqueIdentifier();
         $child->setName($identifier);
         $this->children->set($identifier, $child);
