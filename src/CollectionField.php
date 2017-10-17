@@ -87,9 +87,9 @@ class CollectionField extends AbstractField
      */
     protected function toValue($default) : array
     {
-        return $this->children->copy()->map(function ($name, AbstractField $child) {
+        return array_values($this->children->copy()->map(function ($name, AbstractField $child) {
             return $child->getValue();
-        })->toArray();
+        })->toArray());
     }
 
     /**
