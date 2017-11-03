@@ -89,8 +89,8 @@ abstract class MapField extends AbstractField implements \ArrayAccess
     protected function fromValue($data) : void
     {
         $data = (array) $data;
-        foreach ($data as $name=>$field_data) {
-            $this->getChild($name)->setValue($field_data);
+        foreach ($this->children() as $child) {
+            $child->setValue($data[$child->getName()] ?? null);
         }
     }
 
