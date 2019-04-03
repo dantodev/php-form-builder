@@ -4,6 +4,8 @@
 
 # PHP Form Builder
 
+> ⚠ This package has been abandoned. No further development is planed.
+
 ## Dependencies
 
 * `PHP  >=7.0.0`
